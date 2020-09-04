@@ -1,37 +1,35 @@
 import os
 import os.path
-from unittest import TestCase
+import pytest
 
 from job_runner.job import Job
 from job_runner.reporting import File
 from job_runner.reporting.message import Exited, Finish, Init, Running, Start
-from tests.utils import tmpdir
 
 
-class FileReporterTests(TestCase):
-    def setUp(self):
-        self.reporter = File()
+@pytest.fixture(scope="module")
+def reporter():
+    return File()
 
-    @tmpdir(None)
-    def test_report_with_init_message_argument(self):
-        r = self.reporter
+
+def test_report_with_init_message_argument(tmpdir, reporter):
+    with tmpdir.as_cwd():
+        r = reporter
         job1 = Job({"name": "job1", "stdout": "/stdout", "stderr": "/stderr"}, 0)
 
         r.report(Init([job1], 1, 19))
 
         with open(self.reporter.STATUS_file, "r") as f:
-            self.assertIn(
-                "Current host", f.readline(), "STATUS file missing expected value"
-            )
+            assert "Current host" in f.readline()
+
         with open(self.reporter.STATUS_json, "r") as f:
             contents = "".join(f.readlines())
-            self.assertIn('"name": "job1"', contents, "status.json missing job1")
-            self.assertIn(
-                '"status": "Waiting"', contents, "status.json missing Waiting status"
-            )
+            assert '"name": "job1"' in contents
+            assert '"status": "Waiting"' in contents
 
-    @tmpdir(None)
-    def test_report_with_successful_start_message_argument(self):
+
+def test_report_with_successful_start_message_argument(tmpdir, reporter):
+    with tmpdir.as_cwd():
         msg = Start(
             Job(
                 {
@@ -44,171 +42,137 @@ class FileReporterTests(TestCase):
                 0,
             )
         )
-        self.reporter.status_dict = self.reporter._init_job_status_dict(
+        reporter.status_dict = reporter._init_job_status_dict(
             msg.timestamp, 0, [msg.job]
         )
 
-        self.reporter.report(msg)
+        reporter.report(msg)
 
-        with open(self.reporter.STATUS_file, "r") as f:
-            self.assertIn("job1", f.readline(), "STATUS file missing job1")
-        with open(self.reporter.LOG_file, "r") as f:
-            self.assertIn(
-                "Calling: /bin/bash --foo 1 --bar 2",
-                f.readline(),
-                """JOB_LOG file missing executable and arguments""",
-            )
+        with open(reporter.STATUS_file) as f:
+            assert "job1" in f.readline()
 
-        with open(self.reporter.STATUS_json, "r") as f:
+        with open(reporter.LOG_file) as f:
+            assert "Calling: /bin/bash --foo 1 --bar 2" in f.readline()
+
+        with open(reporter.STATUS_json) as f:
             contents = "".join(f.readlines())
-            self.assertIn(
-                '"status": "Running"', contents, "status.json missing Running status"
-            )
-            self.assertNotIn('"start_time": null', contents, "start_time not set")
+            assert '"status": "Running"' in contents
+            assert '"start_time": null' not in contents
 
-    @tmpdir(None)
-    def test_report_with_failed_start_message_argument(self):
+
+def test_report_with_failed_start_message_argument(tmpdir, reporter):
+    with tmpdir.as_cwd():
         msg = Start(Job({"name": "job1"}, 0)).with_error("massive_failure")
-        self.reporter.status_dict = self.reporter._init_job_status_dict(
+        reporter.status_dict = reporter._init_job_status_dict(
             msg.timestamp, 0, [msg.job]
         )
 
-        self.reporter.report(msg)
+        reporter.report(msg)
 
-        with open(self.reporter.STATUS_file, "r") as f:
-            self.assertIn(
-                "EXIT: {}/{}".format(-10, "massive_failure"),
-                f.readline(),
-                "STATUS file missing EXIT message",
-            )
-        with open(self.reporter.STATUS_json, "r") as f:
+        with open(reporter.STATUS_file) as f:
+            "EXIT: -10/massive_failure" in f.readline()
+
+        with open(reporter.STATUS_json) as f:
             contents = "".join(f.readlines())
-            self.assertIn(
-                '"status": "Failure"', contents, "status.json missing Failure status"
-            )
-            self.assertIn(
-                '"error": "massive_failure"',
-                contents,
-                "status.json missing error message",
-            )
-        self.assertIsNotNone(
-            self.reporter.status_dict["jobs"][0]["end_time"],
-            "end_time not set for job1",
-        )
+            assert '"status": "Failure"' in contents
+            assert '"error": "massive_failure"' in contents
 
-    @tmpdir(None)
-    def test_report_with_successful_exit_message_argument(self):
+        assert reporter.status_dict["jobs"][0]["end_time"] is not None
+
+
+def test_report_with_successful_exit_message_argument(tmpdir, reporter):
+    with tmpdir.as_cwd():
         msg = Exited(Job({"name": "job1"}, 0), 0)
-        self.reporter.status_dict = self.reporter._init_job_status_dict(
+        reporter.status_dict = reporter._init_job_status_dict(
             msg.timestamp, 0, [msg.job]
         )
 
-        self.reporter.report(msg)
+        reporter.report(msg)
 
-        with open(self.reporter.STATUS_json, "r") as f:
+        with open(reporter.STATUS_json) as f:
             contents = "".join(f.readlines())
-            self.assertIn(
-                '"status": "Success"', contents, "status.json missing Success status"
-            )
+            assert '"status": "Success"' in contents
 
-    @tmpdir(None)
-    def test_report_with_failed_exit_message_argument(self):
+
+def test_report_with_failed_exit_message_argument(tmpdir, reporter):
+    with tmpdir.as_cwd():
         msg = Exited(Job({"name": "job1"}, 0), 1).with_error("massive_failure")
-        self.reporter.status_dict = self.reporter._init_job_status_dict(
+        reporter.status_dict = reporter._init_job_status_dict(
             msg.timestamp, 0, [msg.job]
         )
 
-        self.reporter.report(msg)
+        reporter.report(msg)
 
-        with open(self.reporter.STATUS_file, "r") as f:
-            self.assertIn("EXIT: {}/{}".format(1, "massive_failure"), f.readline())
-        with open(self.reporter.ERROR_file, "r") as f:
-            contents = "".join(f.readlines())
-            self.assertIn("<job>job1</job>", contents, "ERROR file missing job")
-            self.assertIn(
-                "<reason>massive_failure</reason>",
-                contents,
-                "ERROR file missing reason",
-            )
-            self.assertIn(
-                "<stderr: Not redirected>",
-                contents,
-                "ERROR had invalid stderr information",
-            )
-        with open(self.reporter.STATUS_json, "r") as f:
-            contents = "".join(f.readlines())
-            self.assertIn(
-                '"status": "Failure"', contents, "status.json missing Failure status"
-            )
-            self.assertIn(
-                '"error": "massive_failure"',
-                contents,
-                "status.json missing error message",
-            )
-        self.assertIsNotNone(self.reporter.status_dict["jobs"][0]["end_time"])
+        with open(reporter.STATUS_file) as f:
+            assert "EXIT: 1/massive_failure" in f.readline()
 
-    @tmpdir(None)
-    def test_report_with_running_message_argument(self):
+        with open(reporter.ERROR_file) as f:
+            contents = "".join(f.readlines())
+            assert "<job>job1</job>" in contents
+            assert "<reason>massive_failure</reason>" in contents
+            assert "<stderr: Not redirected>" in contents
+
+        with open(reporter.STATUS_json) as f:
+            contents = "".join(f.readlines())
+            assert '"status": "Failure"' in contents
+            assert '"error": "massive_failure"' in contents
+
+        assert self.reporter.status_dict["jobs"][0]["end_time"] is not None
+
+
+def test_report_with_running_message_argument(tmpdir, reporter):
+    with tmpdir.as_cwd():
         msg = Running(Job({"name": "job1"}, 0), 100, 10)
-        self.reporter.status_dict = self.reporter._init_job_status_dict(
+        reporter.status_dict = reporter._init_job_status_dict(
             msg.timestamp, 0, [msg.job]
         )
 
-        self.reporter.report(msg)
+        reporter.report(msg)
 
-        with open(self.reporter.STATUS_json, "r") as f:
+        with open(reporter.STATUS_json) as f:
             contents = "".join(f.readlines())
-            self.assertIn('"status": "Running"', contents, "status.json missing status")
-            self.assertIn(
-                '"max_memory_usage": 100',
-                contents,
-                "status.json missing max_memory_usage",
-            )
-            self.assertIn(
-                '"current_memory_usage": 10',
-                contents,
-                "status.json missing current_memory_usage",
-            )
+            assert '"status": "Running"' in contents
+            assert '"max_memory_usage": 100' in contents
+            assert '"current_memory_usage": 10' in contents
 
-    @tmpdir(None)
-    def test_report_with_successful_finish_message_argument(self):
+
+def test_report_with_successful_finish_message_argument(tmpdir, reporter):
+    with tmpdir.as_cwd():
         msg = Finish()
-        self.reporter.status_dict = self.reporter._init_job_status_dict(
+        reporter.status_dict = reporter._init_job_status_dict(
             msg.timestamp, 0, []
         )
 
-        self.reporter.report(msg, sync_disc_timeout=0)
+        reporter.report(msg, sync_disc_timeout=0)
 
-        with open(self.reporter.OK_file, "r") as f:
-            self.assertIn(
-                "All jobs complete", f.readline(), "OK file missing expected value"
-            )
+        with open(reporter.OK_file) as f:
+            assert "All jobs complete" in f.readline()
 
-    @tmpdir(None)
-    def test_dump_error_file_with_stderr(self):
-        """
-        Assert that, in the case of an stderr file, it is included in the XML
-        that constitutes the ERROR file.
-        The report system is left out, since this was tested in the fail case.
-        """
+
+def test_dump_error_file_with_stderr(tmpdir, reporter):
+    """
+    Assert that, in the case of an stderr file, it is included in the XML
+    that constitutes the ERROR file.
+    The report system is left out, since this was tested in the fail case.
+    """
+    with tmpdir.as_cwd():
         with open("stderr.out.0", "a") as stderr:
             stderr.write("Error:\n")
             stderr.write("E_MASSIVE_FAILURE\n")
 
-        self.reporter._dump_error_file(
+        reporter._dump_error_file(
             Job({"name": "job1", "stderr": "stderr.out"}, 0), "massive_failure"
         )
 
-        with open(self.reporter.ERROR_file, "r") as f:
+        with open(reporter.ERROR_file) as f:
             contents = "".join(f.readlines())
-            self.assertIn(
-                "E_MASSIVE_FAILURE", contents, "ERROR file missing stderr content"
-            )
-            self.assertIn("<stderr_file>", contents, "ERROR missing stderr_file part")
+            assert "E_MASSIVE_FAILURE" in contents
+            assert "<stderr_file>" in contents
 
-    @tmpdir(None)
-    def test_old_file_deletion(self):
-        r = self.reporter
+
+def test_old_file_deletion(tmpdir, reporter):
+    with tmpdir.as_cwd():
+        r = reporter
         # touch all files that are to be removed
         for f in [r.EXIT_file, r.ERROR_file, r.STATUS_file, r.OK_file]:
             open(f, "a").close()
@@ -216,15 +180,16 @@ class FileReporterTests(TestCase):
         r._delete_old_status_files()
 
         for f in [r.EXIT_file, r.ERROR_file, r.STATUS_file, r.OK_file]:
-            self.assertFalse(os.path.isfile(f), "{} was not deleted".format(r))
+            assert not os.path.isfile(f)
 
-    @tmpdir(None)
-    def test_status_file_is_correct(self):
-        """The STATUS file is a file to which we append data about jobs as they
-        are run. So this involves multiple reports, and should be tested as
-        such.
-        See https://github.com/equinor/libres/issues/764
-        """
+
+def test_status_file_is_correct(tmpdir, reporter):
+    """The STATUS file is a file to which we append data about jobs as they
+    are run. So this involves multiple reports, and should be tested as
+    such.
+    See https://github.com/equinor/libres/issues/764
+    """
+    with tmpdir.as_cwd():
         j_1 = Job({"name": "j_1", "executable": "", "argList": []}, 0)
         j_2 = Job({"name": "j_2", "executable": "", "argList": []}, 0)
         init = Init([j_1, j_2], 1, 1)
@@ -234,7 +199,7 @@ class FileReporterTests(TestCase):
         exited_j_2 = Exited(j_2, 9).with_error("failed horribly")
 
         for msg in [init, start_j_1, exited_j_1, start_j_2, exited_j_2]:
-            self.reporter.report(msg)
+            reporter.report(msg)
 
         expected_j1_line = "{:32}: {start_ts:%H:%M:%S} .... {end_ts:%H:%M:%S}  \n".format(  # noqa
             j_1.name(), start_ts=start_j_1.timestamp, end_ts=exited_j_1.timestamp
@@ -247,13 +212,13 @@ class FileReporterTests(TestCase):
             msg=exited_j_2.error_message,
         )
 
-        with open(self.reporter.STATUS_file, "r") as f:
+        with open(reporter.STATUS_file) as f:
             for expected in [
                 "Current host",
                 expected_j1_line,
                 expected_j2_line,
             ]:  # noqa
-                self.assertIn(expected, f.readline())
+                assert expected in f.readline()
 
             # EOF
-            self.assertEqual("", f.readline())
+            assert f.readline() == ""

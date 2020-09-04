@@ -2,7 +2,6 @@ import json
 import os
 import os.path
 import stat
-from unittest import TestCase
 
 from job_runner.reporting.message import Exited, Start
 from job_runner.runner import JobRunner

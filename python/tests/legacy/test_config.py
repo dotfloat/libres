@@ -6,7 +6,6 @@ from ert.config import ConfigContent , ContentItem, ContentNode
 from ert.config import ConfigParser
 from ert.config import ConfigSettings
 
-from tests import ResTest
 
-class ErtLegacyConfigTest(ResTest):
+def test_pass():
     pass

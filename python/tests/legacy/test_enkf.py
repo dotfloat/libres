@@ -80,8 +80,5 @@ from ert.job_queue import ErtScript as ErtScript
 from ert.job_queue import ErtPlugin as ErtPlugin, CancelPluginException as CancelPluginException
 
 
-
-from tests import ResTest
-
-class ErtLegacyEnkfTest(ResTest):
+def test_pass():
     pass

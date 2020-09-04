@@ -1,57 +1,54 @@
 import sys
+import pytest
 from datetime import datetime as dt
-from unittest import TestCase
 
 from job_runner.job import Job
 from job_runner.reporting import Network
 from job_runner.reporting.message import Exited, Init, Finish
 
-if sys.version_info >= (3, 3):
-    from unittest.mock import patch
-else:
-    from mock import patch
+
+@pytest.fixture(scope="module")
+def reporter():
+    return Network()
 
 
-class NetworkReporterTests(TestCase):
-    def setUp(self):
-        self.reporter = Network()
+def test_init_msg(reporter, mocker):
+    post_mock = mocker.patch("job_runner.reporting.network.requests.post")
+    reporter.report(Init([], 0, 1))
+    assert post_mock.called
 
-    @patch("job_runner.reporting.network.requests.post")
-    def test_init_msg(self, post_mock):
-        self.reporter.report(Init([], 0, 1))
 
-        self.assertTrue(post_mock.called)
+def test_failed_job_is_reported(reporter, mocker):
+    post_mock = mocker.patch("job_runner.reporting.network.requests.post")
+    reporter.start_time = dt.now()
+    job = Job({"name": "failing job", "executable": "/dev/null", "argList": []}, 0)
 
-    @patch("job_runner.reporting.network.requests.post")
-    def test_failed_job_is_reported(self, post_mock):
-        self.reporter.start_time = dt.now()
-        job = Job({"name": "failing job", "executable": "/dev/null", "argList": []}, 0)
+    reporter.report(Exited(job, 9).with_error("failed"))
+    _, data = post_mock.call_args
 
-        self.reporter.report(Exited(job, 9).with_error("failed"))
-        _, data = post_mock.call_args
+    assert post_mock.called
+    assert '"status": "exit"' in data["data"]
+    assert '"error": true' in data["data"]
 
-        self.assertTrue(post_mock.called, "post not called for failed Exit")
-        self.assertIn('"status": "exit"', data["data"], "no exit in data")
-        self.assertIn('"error": true', data["data"], "no set err flag in data")
 
-    @patch("job_runner.reporting.network.requests.post")
-    def test_successful_job_not_reported(self, post_mock):
-        self.reporter.report(Exited(None, 9))
+def test_successful_job_not_reported(reporter, mocker):
+    post_mock = mocker.patch("job_runner.reporting.network.requests.post")
+    reporter.report(Exited(None, 9))
+    assert not post_mock.called
 
-        self.assertFalse(post_mock.called, "post called on successful Exit")
 
-    @patch("job_runner.reporting.network.requests.post")
-    def test_successful_forward_model_reported(self, post_mock):
-        self.reporter.start_time = dt.now()
+def test_successful_forward_model_reported(reporter, mocker):
+    post_mock = mocker.patch("job_runner.reporting.network.requests.post")
+    reporter.start_time = dt.now()
 
-        self.reporter.report(Finish())
-        _, data = post_mock.call_args
+    reporter.report(Finish())
+    _, data = post_mock.call_args
 
-        self.assertTrue(post_mock.called, "post not called on OK Finish")
-        self.assertIn('"status": "OK"', data["data"], "no OK in data")
+    assert post_mock.called
+    assert '"status": "OK"' in data["data"]
 
-    @patch("job_runner.reporting.network.requests.post")
-    def test_failed_forward_model_not_reported(self, post_mock):
-        self.reporter.report(Finish().with_error("failed"))
 
-        self.assertFalse(post_mock.called, "post called on failed Finish")
+def test_failed_forward_model_not_reported(reporter, mocker):
+    post_mock = mocker.patch("job_runner.reporting.network.requests.post")
+    reporter.report(Finish().with_error("failed"))
+    assert not post_mock.called

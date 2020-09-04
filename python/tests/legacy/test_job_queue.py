@@ -16,7 +16,5 @@ from ert.job_queue import Workflow
 from ert.job_queue import WorkflowRunner
 
 
-from tests import ResTest
-
-class ErtLegacyJobQueueTest(ResTest):
+def test_pass():
     pass

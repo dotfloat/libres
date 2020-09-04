@@ -1,44 +1,38 @@
 import os
 import sys
-from unittest import TestCase
+import pytest
 
-from tests.utils import tmpdir
 from job_runner.reporting.message import Exited, Running, Start
 from job_runner.job import Job
 
-if sys.version_info >= (3, 3):
-    from unittest.mock import patch, PropertyMock
-else:
-    from mock import patch, PropertyMock
 
+def test_run_with_process_failing(tmpdir, mocker):
+    with tmpdir.as_cwd():
+        mock_process = mocker.patch("job_runner.job.assert_file_executable")
+        mocker.patch("job_runner.job.Popen")
+        mocker.patch("job_runner.job.Process")
 
-class JobTests(TestCase):
-    @patch("job_runner.job.assert_file_executable")
-    @patch("job_runner.job.Popen")
-    @patch("job_runner.job.Process")
-    @tmpdir(None)
-    def test_run_with_process_failing(
-        self, mock_process, mock_popen, mock_assert_file_executable
-    ):
         job = Job({}, 0)
-        type(mock_process.return_value.memory_info.return_value).rss = PropertyMock(
+        type(mock_process.return_value.memory_info.return_value).rss = mocker.PropertyMock(
             return_value=10
-        )
+            )
         mock_process.return_value.wait.return_value = 9
 
         run = job.run()
 
-        self.assertIsInstance(next(run), Start, "run did not yield Start message")
-        self.assertIsInstance(next(run), Running, "run did not yield Running message")
+        assert isinstance(next(run), Start)
+        assert isinstance(next(run), Running)
         exited = next(run)
-        self.assertIsInstance(exited, Exited, "run did not yield Exited message")
-        self.assertEqual(9, exited.exit_code, "Exited message had unexpected exit code")
+        print(mock_process().memory_info())
+        assert isinstance(exited, Exited)
+        assert int(exited.exit_code) == 9
 
-        with self.assertRaises(StopIteration):
+        with pytest.raises(StopIteration):
             next(run)
 
-    @tmpdir(None)
-    def test_run_fails_using_exit_bash_builtin(self):
+
+def test_run_fails_using_exit_bash_builtin(tmpdir):
+    with tmpdir.as_cwd():
         job = Job(
             {
                 "name": "exit 1",
@@ -48,21 +42,18 @@ class JobTests(TestCase):
                 "argList": ["-c", 'echo "failed with {}" 1>&2 ; exit {}'.format(1, 1)],
             },
             0,
-        )
+            )
 
         statuses = list(job.run())
 
-        self.assertEqual(3, len(statuses), "Wrong statuses count")
-        self.assertEqual(1, statuses[2].exit_code, "Exited status wrong exit_code")
-        self.assertEqual(
-            "Process exited with status code 1",
-            statuses[2].error_message,
-            "Exited status wrong error_message",
-        )
+        assert len(statuses) == 3
+        assert statuses[2].exit_code == 1
+        assert statuses[2].error_message == "Process exited with status code 1"
 
-    @tmpdir(None)
-    def test_run_with_defined_executable_but_missing(self):
-        executable = os.path.join(os.getcwd(), "this/is/not/a/file")
+
+def test_run_with_defined_executable_but_missing(tmpdir):
+    with tmpdir.as_cwd():
+        executable = str(tmpdir /  "this/is/not/a/file")
         job = Job(
             {
                 "name": "TEST_EXECUTABLE_NOT_FOUND",
@@ -71,15 +62,16 @@ class JobTests(TestCase):
                 "stderr": "mkdir_err",
             },
             0,
-        )
+            )
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             for _ in job.run():
                 pass
 
-    @tmpdir(None)
-    def test_run_with_defined_executable_no_exec_bit(self):
-        non_executable = os.path.join(os.getcwd(), "foo")
+
+def test_run_with_defined_executable_no_exec_bit(tmpdir):
+    with tmpdir.as_cwd():
+        non_executable = str(tmpdir / "foo")
         with open(non_executable, "a"):
             pass
 
@@ -91,8 +83,8 @@ class JobTests(TestCase):
                 "stderr": "mkdir_err",
             },
             0,
-        )
+            )
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             for _ in job.run():
                 pass
