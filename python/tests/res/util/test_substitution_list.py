@@ -1,41 +1,39 @@
-from tests import ResTest
+import pytest
 from res.util.substitution_list import SubstitutionList
 
 
-class SubstitutionListTest(ResTest):
-    def test_substitution_list(self):
-        subst_list = SubstitutionList()
+def test_substitution_list():
+    subst_list = SubstitutionList()
+    subst_list.addItem("Key", "Value", "Doc String")
 
-        subst_list.addItem("Key", "Value", "Doc String")
+    assert len(subst_list) == 1
 
-        self.assertEqual(len(subst_list), 1)
+    with pytest.raises(KeyError):
+        item = subst_list[2]
 
-        with self.assertRaises(KeyError):
-            item = subst_list[2]
+    with pytest.raises(KeyError):
+        item = subst_list["NoSuchKey"]
 
-        with self.assertRaises(KeyError):
-            item = subst_list["NoSuchKey"]
+    with pytest.raises(KeyError):
+        item = subst_list.doc("NoSuchKey")
 
-        with self.assertRaises(KeyError):
-            item = subst_list.doc("NoSuchKey")
+    assert "Key" in subst_list
+    assert subst_list["Key"] == "Value"
+    assert subst_list.doc("Key") == "Doc String"
 
-        self.assertTrue("Key" in subst_list)
-        self.assertEqual(subst_list["Key"] , "Value")
-        self.assertEqual(subst_list.doc("Key") , "Doc String")
+    subst_list.addItem("Key2", "Value2", "Doc String2")
+    assert len(subst_list) == 2
 
-        subst_list.addItem("Key2", "Value2", "Doc String2")
-        self.assertEqual(len(subst_list), 2)
+    keys = subst_list.keys( )
+    assert keys[0] == "Key"
+    assert keys[1] == "Key2"
 
-        keys = subst_list.keys( )
-        self.assertEqual(keys[0] , "Key")
-        self.assertEqual(keys[1] , "Key2")
+    assert "Key" in str(subst_list)
+    assert "SubstitutionList" in repr(subst_list)
+    assert "2" in repr(subst_list)
 
-        self.assertIn('Key', str(subst_list))
-        self.assertIn('SubstitutionList', repr(subst_list))
-        self.assertIn('2', repr(subst_list))
-
-        self.assertEqual(1729, subst_list.get('nosuchkey', 1729))
-        self.assertIsNone(subst_list.get('nosuchkey'))
-        self.assertIsNone(subst_list.get(513))
-        for key in ('Key', 'Key2'):
-            self.assertEqual(subst_list[key], subst_list.get(key))
+    assert subst_list.get("nosuchkey", 1729) == 1729
+    assert subst_list.get("nosuchkey") is None
+    assert subst_list.get(513) is None
+    for key in ('Key', 'Key2'):
+        assert subst_list[key] == subst_list.get(key)

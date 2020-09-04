@@ -13,9 +13,6 @@
 #
 #  See the GNU General Public License at <http://www.gnu.org/licenses/gpl.html>
 #  for more details.
-
-
-import unittest
 import os
 from tests.utils import tmpdir
 from subprocess import Popen, PIPE
@@ -23,9 +20,8 @@ from subprocess import Popen, PIPE
 from res.util.subprocess import await_process_tee
 
 
-class TestSubprocess(unittest.TestCase):
-    @tmpdir()
-    def test_await_process_tee(self):
+def test_await_process_tee(tmpdir):
+    with tmpdir.as_cwd():
         with open("a", "wb") as a_fh, open("b", "wb") as b_fh:
             process = Popen(["/bin/cat", "/bin/cat"], stdout=PIPE)
             await_process_tee(process, a_fh, b_fh)
@@ -37,6 +33,6 @@ class TestSubprocess(unittest.TestCase):
         with open("/bin/cat", "rb") as f:
             cat_content = f.read()
 
-        self.assertTrue(process.stdout.closed)
-        self.assertEqual(cat_content, a_content)
-        self.assertEqual(cat_content, b_content)
+        assert process.stdout.closed
+        assert cat_content == a_content
+        assert cat_content == b_content

@@ -1,250 +1,248 @@
+import pytest
 from ecl.util.util import RandomNumberGenerator
 from ecl.util.enums import RngAlgTypeEnum, RngInitModeEnum
-from ecl.util.test import TestAreaContext
 from res.util import Matrix
-from tests import ResTest
 from cwrap import CFILE, BaseCClass, load, open as copen
 
-class MatrixTest(ResTest):
-    def test_matrix(self):
-        m = Matrix(2, 3)
 
-        self.assertEqual(m.rows(), 2)
-        self.assertEqual(m.columns(), 3)
+def test_matrix():
+    m = Matrix(2, 3)
 
-        self.assertEqual(m[(0, 0)], 0)
+    assert m.rows() == 2
+    assert m.columns() == 3
+    assert m[(0, 0)] == 0
 
-        m[(1, 1)] = 1.5
-        self.assertEqual(m[(1, 1)], 1.5)
+    m[(1, 1)] = 1.5
+    assert m[(1, 1)] == 1.5
 
-        m[1,0] = 5
-        self.assertEqual(m[1, 0], 5)
+    m[1,0] = 5
+    assert m[(1, 0)] == 5
 
-        with self.assertRaises(TypeError):
-            m[5] = 5
+    with pytest.raises(TypeError):
+        m[5] = 5
 
-        with self.assertRaises(IndexError):
-            m[2, 0] = 0
+    with pytest.raises(IndexError):
+        m[2, 0] = 0
 
-        with self.assertRaises(IndexError):
-            m[0, 3] = 0
-
-    def test_matrix_set(self):
-        m1 = Matrix(2,2)
-        m1.setAll(99)
-        self.assertEqual( 99 , m1[0,0] )
-        self.assertEqual( 99 , m1[1,1] )
-        m2 = Matrix(2,2 , value = 99)
-        self.assertEqual(m1,m2)
+    with pytest.raises(IndexError):
+        m[0, 3] = 0
 
 
-    def test_matrix_random_init(self):
-        m = Matrix(10,10)
-        rng = RandomNumberGenerator(RngAlgTypeEnum.MZRAN, RngInitModeEnum.INIT_DEFAULT)
-        m.randomInit( rng )
+def test_matrix_set():
+    m1 = Matrix(2,2)
+    m1.setAll(99)
+    assert m1[0, 0] == 99
+    assert m1[1, 1] == 99
 
-    def test_matrix_copy_column(self):
-        m = Matrix(10,2)
-        rng = RandomNumberGenerator(RngAlgTypeEnum.MZRAN, RngInitModeEnum.INIT_DEFAULT)
-        m.randomInit( rng )
-
-        with self.assertRaises(ValueError):
-            m.copyColumn(0,2)
-
-        with self.assertRaises(ValueError):
-            m.copyColumn(2,0)
-
-        with self.assertRaises(ValueError):
-            m.copyColumn(-2,0)
-            
-        m.copyColumn(1, 0)
-        for i in range(m.rows()):
-            self.assertEqual( m[i,0] , m[i,1] )
-
-    
-    def test_matrix_scale(self):
-        m = Matrix(2,2 , value = 1)
-        m.scaleColumn(0 , 2)
-        self.assertEqual(2 , m[0,0])
-        self.assertEqual(2 , m[1,0])
-        
-        m.setAll(1)
-        m.scaleRow(1 , 2 )
-        self.assertEqual(2 , m[1,0])
-        self.assertEqual(2 , m[1,1])
-
-        with self.assertRaises(IndexError):
-            m.scaleColumn(10 , 99)
-        
-        with self.assertRaises(IndexError):
-            m.scaleRow(10 , 99)
+    m2 = Matrix(2,2 , value = 99)
+    assert m1 == m2
 
 
+def test_matrix_random_init():
+    m = Matrix(10,10)
+    rng = RandomNumberGenerator(RngAlgTypeEnum.MZRAN, RngInitModeEnum.INIT_DEFAULT)
+    m.randomInit( rng )
 
 
-    def test_matrix_equality(self):
-        m = Matrix(2, 2)
-        m[0, 0] = 2
-        m[1, 1] = 4
+def test_matrix_copy_column():
+    m = Matrix(10,2)
+    rng = RandomNumberGenerator(RngAlgTypeEnum.MZRAN, RngInitModeEnum.INIT_DEFAULT)
+    m.randomInit( rng )
 
-        s = Matrix(2, 3)
-        s[0, 0] = 2
-        s[1, 1] = 4
+    with pytest.raises(ValueError):
+        m.copyColumn(0,2)
 
-        self.assertNotEqual(m, s)
+    with pytest.raises(ValueError):
+        m.copyColumn(2,0)
 
-        r = Matrix(2, 2)
-        r[0, 0] = 2
-        r[1, 1] = 3
+    with pytest.raises(ValueError):
+        m.copyColumn(-2,0)
 
-        self.assertNotEqual(m, r)
-
-        r[1, 1] = 4
-
-        self.assertEqual(m, r)
-
-    def test_str(self):
-        m = Matrix(2, 2)
-        s = "%s" % m
-
-        m[0,0] = 0
-        m[0,1] = 1
-        m[1,0] = 2
-        m[1,1] = 3
-        
-        with TestAreaContext("matrix_fprint"):
-            with copen("matrix.txt", "w") as f:
-                m.fprint( f )
-
-            with open("matrix.txt") as f:
-                l1 = [ float(x) for x in f.readline().split()]
-                l2 = [ float(x) for x in f.readline().split()]
-
-            self.assertEqual( l1[0] , m[0,0])
-            self.assertEqual( l1[1] , m[0,1])
-            self.assertEqual( l2[0] , m[1,0])
-            self.assertEqual( l2[1] , m[1,1])
-
-            
-    def test_copy_equal(self):
-        m1 = Matrix(2, 2)
-        m1[0,0] = 0
-        m1[0,1] = 1
-        m1[1,0] = 2
-        m1[1,1] = 3
-
-        m2 = m1.copy( )
-        self.assertTrue( m1 == m2 )
-        
-    def test_sub_copy(self):
-        m1 = Matrix(3,3)
-        rng = RandomNumberGenerator(RngAlgTypeEnum.MZRAN, RngInitModeEnum.INIT_DEFAULT)
-        m1.randomInit( rng )
-
-        with self.assertRaises(ValueError):
-            m2 = m1.subCopy( 0,0,4,2 )
-            
-        with self.assertRaises(ValueError):
-            m2 = m1.subCopy( 0,0,2,4 )
-
-        with self.assertRaises(ValueError):
-            m2 = m1.subCopy( 4,0,1,1 )
-
-        with self.assertRaises(ValueError):
-            m2 = m1.subCopy( 0,2,1,2 )
-
-            
-        m2 = m1.subCopy( 0,0,2,2 )
-        for i in range(2):
-            for j in range(2):
-                self.assertEqual( m1[i,j] , m2[i,j])
-
-                
-    def test_transpose(self):
-        m = Matrix(3,2)
-        m[0,0] = 0
-        m[1,0] = 2
-        m[2,0] = 4
-
-        m[0,1] = 1
-        m[1,1] = 3
-        m[2,1] = 5
-        
-        mt = m.transpose( ) 
-        
-        self.assertEqual(m[0,0] , 0)
-        self.assertEqual(m[1,0] , 2)
-        self.assertEqual(m[2,0] , 4)
-
-        self.assertEqual(m[0,1] , 1)
-        self.assertEqual(m[1,1] , 3)
-        self.assertEqual(m[2,1] , 5)
-
-        self.assertEqual( mt.rows() , m.columns())
-        self.assertEqual( mt.columns() , m.rows())
-        self.assertEqual(mt[0,0] , 0)
-        self.assertEqual(mt[1,0] , 1)
-
-        self.assertEqual(mt[0,1] , 2)
-        self.assertEqual(mt[1,1] , 3)
-
-        self.assertEqual(mt[0,2] , 4)
-        self.assertEqual(mt[1,2] , 5)
-        
-        m.transpose( inplace = True )
-        self.assertEqual( m , mt )
+    m.copyColumn(1, 0)
+    for i in range(m.rows()):
+        assert m[i, 0] == m[i, 1]
 
 
-    def test_matmul(self):
-        m1 = Matrix(3,3)
-        m2 = Matrix(2,2)
+def test_matrix_scale():
+    m = Matrix(2,2 , value = 1)
+    m.scaleColumn(0 , 2)
+    assert m[0, 0] == 2
+    assert m[1, 0] == 2
 
-        with self.assertRaises(ValueError):
-            Matrix.matmul( m1 , m2 )
+    m.setAll(1)
+    m.scaleRow(1 , 2 )
+    assert m[1, 0] == 2
+    assert m[1, 1] == 2
 
-        m = Matrix(3,2)
-        m[0,0] = 0
-        m[1,0] = 2
-        m[2,0] = 4
+    with pytest.raises(IndexError):
+        m.scaleColumn(10 , 99)
 
-        m[0,1] = 1
-        m[1,1] = 3
-        m[2,1] = 5
-        
-        mt = m.transpose( ) 
+    with pytest.raises(IndexError):
+        m.scaleRow(10 , 99)
 
-        m2 = Matrix.matmul( m , mt )
-        
-        self.assertEqual( m2[0,0] , 1  )
-        self.assertEqual( m2[1,1] , 13 )
-        self.assertEqual( m2[2,2] , 41 )
-        
 
-    def test_csv(self):
-        m = Matrix(2, 2)
-        m[0, 0] = 2
-        m[1, 1] = 4
-        with TestAreaContext("matrix_csv"):
-            m.dumpCSV("matrix.csv")
+def test_matrix_equality():
+    m = Matrix(2, 2)
+    m[0, 0] = 2
+    m[1, 1] = 4
 
-    def test_identity(self):
-        m1 = Matrix.identity(1)
-        self.assertEqual(m1.rows(), 1)
-        self.assertEqual(m1.columns(), 1)
-        self.assertEqual(m1[0,0], 1)
+    s = Matrix(2, 3)
+    s[0, 0] = 2
+    s[1, 1] = 4
+    assert m != s
 
-        with self.assertRaises(ValueError):
-            Matrix.identity(0)
-        with self.assertRaises(ValueError):
-            Matrix.identity(-3)
+    r = Matrix(2, 2)
+    r[0, 0] = 2
+    r[1, 1] = 3
+    assert m != r
 
-        m = Matrix.identity(17)
-        self.assertEqual(m.rows(), 17)
-        self.assertEqual(m.columns(), 17)
-        for i in range(17):
-            for j in range(17):
-                elt = m[i, j]
-                if i == j:
-                    self.assertEqual(elt, 1)
-                else:
-                    self.assertEqual(elt, 0)
+    r[1, 1] = 4
+    assert m == r
+
+
+def test_str(tmpdir):
+    m = Matrix(2, 2)
+    s = str(m)
+
+    m[0,0] = 0
+    m[0,1] = 1
+    m[1,0] = 2
+    m[1,1] = 3
+
+    with tmpdir.as_cwd():
+        with copen("matrix.txt", "w") as f:
+            m.fprint( f )
+
+        with open("matrix.txt") as f:
+            l1 = map(float, f.readline().split())
+            l2 = map(float, f.readline().split())
+
+        assert l1[0] == m[0, 0]
+        assert l1[1] == m[0, 1]
+        assert l2[0] == m[1, 0]
+        assert l2[1] == m[1, 1]
+
+
+def test_copy_equal():
+    m1 = Matrix(2, 2)
+    m1[0,0] = 0
+    m1[0,1] = 1
+    m1[1,0] = 2
+    m1[1,1] = 3
+
+    m2 = m1.copy( )
+    assert m1 == m2
+
+
+def test_sub_copy():
+    m1 = Matrix(3,3)
+    rng = RandomNumberGenerator(RngAlgTypeEnum.MZRAN, RngInitModeEnum.INIT_DEFAULT)
+    m1.randomInit( rng )
+
+    with pytest.raises(ValueError):
+        m2 = m1.subCopy( 0,0,4,2 )
+
+    with pytest.raises(ValueError):
+        m2 = m1.subCopy( 0,0,2,4 )
+
+    with pytest.raises(ValueError):
+        m2 = m1.subCopy( 4,0,1,1 )
+
+    with pytest.raises(ValueError):
+        m2 = m1.subCopy( 0,2,1,2 )
+
+    m2 = m1.subCopy( 0,0,2,2 )
+    for i in range(2):
+        for j in range(2):
+            assert m1[i, j] == m2[i, j]
+
+
+def test_transpose():
+    m = Matrix(3,2)
+    m[0,0] = 0
+    m[1,0] = 2
+    m[2,0] = 4
+
+    m[0,1] = 1
+    m[1,1] = 3
+    m[2,1] = 5
+
+    mt = m.transpose( )
+
+    assert m[0,0] == 0
+    assert m[1,0] == 2
+    assert m[2,0] == 4
+
+    assert m[0,1] == 1
+    assert m[1,1] == 3
+    assert m[2,1] == 5
+
+    assert mt.rows() == m.columns()
+    assert mt.columns() == m.rows()
+    assert mt[0,0] == 0
+    assert mt[1,0] == 1
+
+    assert mt[0,1] == 2
+    assert mt[1,1] == 3
+
+    assert mt[0,2] == 4
+    assert mt[1,2] == 5
+
+    m.transpose( inplace = True )
+    assert m == mt
+
+
+def test_matmul():
+    m1 = Matrix(3,3)
+    m2 = Matrix(2,2)
+
+    with pytest.raises(ValueError):
+        Matrix.matmul( m1 , m2 )
+
+    m = Matrix(3,2)
+    m[0,0] = 0
+    m[1,0] = 2
+    m[2,0] = 4
+
+    m[0,1] = 1
+    m[1,1] = 3
+    m[2,1] = 5
+
+    mt = m.transpose( )
+
+    m2 = Matrix.matmul( m , mt )
+
+    assert m2[0,0] == 1
+    assert m2[1,1] == 13
+    assert m2[2,2] == 41
+
+
+def test_csv(tmpdir):
+    m = Matrix(2, 2)
+    m[0, 0] = 2
+    m[1, 1] = 4
+    with tmpdir.as_cwd():
+        m.dumpCSV("matrix.csv")
+
+
+def test_identity():
+    m1 = Matrix.identity(1)
+    assert m1.rows() == 1
+    assert m1.columns() == 1
+    assert m1[0, 0] == 1
+
+    with pytest.raises(ValueError):
+        Matrix.identity(0)
+    with pytest.raises(ValueError):
+        Matrix.identity(-3)
+
+    m = Matrix.identity(17)
+    assert m.rows() == 17
+    assert m.columns() == 17
+    for i in range(17):
+        for j in range(17):
+            elt = m[i, j]
+            if i == j:
+                assert elt == 1
+            else:
+                assert elt == 0

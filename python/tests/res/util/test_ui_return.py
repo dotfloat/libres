@@ -1,71 +1,74 @@
 import os
+import pytest
 
 from res.util import UIReturn
 from res.util.enums import UIReturnStatusEnum
-from tests import ResTest
 
 
-class UIReturnTest(ResTest):
-    def test_create(self):
-        ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_OK)
-        self.assertTrue(ui_return)
+def test_create():
+    ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_OK)
+    assert ui_return
 
-        ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_FAIL)
-        self.assertFalse(ui_return)
+    ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_FAIL)
+    assert not ui_return
 
-        self.assertEqual(0, len(ui_return))
+    assert len(ui_return) == 0
 
-    def test_help(self):
-        ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_OK)
-        self.assertEqual("", ui_return.help_text())
 
-        ui_return.add_help("Help1")
-        self.assertEqual("Help1", ui_return.help_text())
+def test_help():
+    ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_OK)
+    assert ui_return.help_text() == ""
 
-        ui_return.add_help("Help2")
-        self.assertEqual("Help1 Help2", ui_return.help_text())
+    ui_return.add_help("Help1")
+    assert ui_return.help_text() == "Help1"
 
-    def test_error_raises_OK(self):
-        ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_OK)
-        with self.assertRaises(ValueError):
-            ui_return.add_error("Error1")
+    ui_return.add_help("Help2")
+    assert ui_return.help_text() == "Help1 Help2"
 
-        with self.assertRaises(ValueError):
-            ui_return.last_error()
 
-        with self.assertRaises(ValueError):
-            ui_return.first_error()
-
-    def test_add_error(self):
-        ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_FAIL)
+def test_error_raises_OK():
+    ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_OK)
+    with pytest.raises(ValueError):
         ui_return.add_error("Error1")
-        ui_return.add_error("Error2")
-        ui_return.add_error("Error3")
-        self.assertEqual(3, len(ui_return))
 
-        self.assertEqual("Error1", ui_return.first_error())
-        self.assertEqual("Error3", ui_return.last_error())
+    with pytest.raises(ValueError):
+        ui_return.last_error()
 
-    def test_iget_error(self):
-        ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_FAIL)
-        ui_return.add_error("Error1")
-        ui_return.add_error("Error2")
-        ui_return.add_error("Error3")
+    with pytest.raises(ValueError):
+        ui_return.first_error()
 
-        errorList = []
-        for index in range(len(ui_return)):
-            errorList.append(ui_return.iget_error(index))
-        self.assertEqual(errorList, ["Error1", "Error2", "Error3"])
 
-        with self.assertRaises(TypeError):
-            ui_return.iget_error("XX")
+def test_add_error():
+    ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_FAIL)
+    ui_return.add_error("Error1")
+    ui_return.add_error("Error2")
+    ui_return.add_error("Error3")
+    assert len(ui_return) == 3
+    assert ui_return.first_error() == "Error1"
+    assert ui_return.last_error() == "Error3"
 
-        ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_OK)
-        errorList = []
-        for index in range(len(ui_return)):
-            errorList.append(ui_return.iget_error(index))
-        self.assertEqual(errorList, [])
 
-    def test_status_enum(self):
-        source_file_path = os.path.join("lib", "include", "ert", "res_util", "ui_return.hpp")
-        self.assertEnumIsFullyDefined(UIReturnStatusEnum, "ui_return_status_enum", source_file_path)
+def test_iget_error():
+    ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_FAIL)
+    ui_return.add_error("Error1")
+    ui_return.add_error("Error2")
+    ui_return.add_error("Error3")
+
+    errorList = []
+    for index in range(len(ui_return)):
+        errorList.append(ui_return.iget_error(index))
+    assert errorList == ["Error1", "Error2", "Error3"]
+
+    with pytest.raises(TypeError):
+        ui_return.iget_error("XX")
+
+    ui_return = UIReturn(UIReturnStatusEnum.UI_RETURN_OK)
+    errorList = []
+    for index in range(len(ui_return)):
+        errorList.append(ui_return.iget_error(index))
+    assert errorList == []
+
+
+def test_status_enum(res_helper):
+    source_file_path = os.path.join("lib", "include", "ert", "res_util", "ui_return.hpp")
+    res_helper.assert_enum_fully_defined(UIReturnStatusEnum, "ui_return_status_enum", source_file_path)
