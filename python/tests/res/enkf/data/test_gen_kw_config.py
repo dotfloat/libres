@@ -23,12 +23,12 @@ class GenKwConfigTest(ResTest):
         template_file = "template.txt"
         parameter_file = "parameters.txt"
         parameter_file_comments = "parameters_with_comments.txt"
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             conf = GenKwConfig("KEY", template_file, "does_not_exist")
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             conf = GenKwConfig("Key", "does_not_exist", parameter_file)
 
         conf = GenKwConfig("KEY", template_file, parameter_file)
         conf = GenKwConfig("KEY", template_file, parameter_file_comments)
-        self.assertEqual(len(conf), 3)
+        assert len(conf) == 3

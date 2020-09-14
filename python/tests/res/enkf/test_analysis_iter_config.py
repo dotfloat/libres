@@ -25,13 +25,13 @@ class AnalysisIterConfigTest(ResTest):
     def test_set_analysis_iter_config(self):
         c = AnalysisIterConfig()
 
-        self.assertFalse( c.caseFormatSet() )
+        assert not  c.caseFormatSet() 
         c.setCaseFormat("case%d")
-        self.assertTrue( c.caseFormatSet() )
+        assert  c.caseFormatSet() 
 
-        self.assertFalse( c.numIterationsSet() )
+        assert not  c.numIterationsSet() 
         c.setNumIterations(1)
-        self.assertTrue( c.numIterationsSet() )
+        assert  c.numIterationsSet() 
 
     def test_analysis_iter_config_constructor(self):
         config_dict = {
@@ -41,7 +41,6 @@ class AnalysisIterConfigTest(ResTest):
         }
         c_default = AnalysisIterConfig()
         c_dict = AnalysisIterConfig(config_dict=config_dict)
-        self.assertEqual(c_default, c_dict)
-
+        assert c_default == c_dict
 
 

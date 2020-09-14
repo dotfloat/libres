@@ -22,7 +22,7 @@ class GenKwCollectorTest(ResTest):
 
             realization_20 = data.loc[20]
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 realization_60 = data.loc[60]
 
             data = GenKwCollector.loadAllGenKwData(ert, "default_0", ["SNAKE_OIL_PARAM:OP1_PERSISTENCE", "SNAKE_OIL_PARAM:OP1_OFFSET"])
@@ -30,5 +30,5 @@ class GenKwCollectorTest(ResTest):
             self.assertFloatEqual(data["SNAKE_OIL_PARAM:OP1_PERSISTENCE"][0], 0.047517)
             self.assertFloatEqual(data["SNAKE_OIL_PARAM:OP1_OFFSET"][0], 0.054539)
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 data["SNAKE_OIL_PARAM:OP1_DIVERGENCE_SCALE"]

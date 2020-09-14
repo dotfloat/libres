@@ -54,8 +54,8 @@ class ErtPluginTest(ResTest):
 
         arguments = simple_plugin.getArguments()
 
-        self.assertTrue("SimplePlugin" in simple_plugin.getName())
-        self.assertEqual("No description provided!", simple_plugin.getDescription())
+        assert "SimplePlugin" in simple_plugin.getName()
+        assert "No description provided!" == simple_plugin.getDescription()
 
         simple_plugin.initializeAndRun([str, int], arguments)
 
@@ -63,8 +63,8 @@ class ErtPluginTest(ResTest):
     def test_full_ert_plugin(self):
         plugin = FullPlugin("ert")
 
-        self.assertEqual(plugin.getName(), "FullPlugin")
-        self.assertEqual(plugin.getDescription(), "Fully described!")
+        assert plugin.getName() == "FullPlugin"
+        assert plugin.getDescription() == "Fully described!"
 
         arguments = plugin.getArguments()
 
@@ -74,7 +74,7 @@ class ErtPluginTest(ResTest):
     def test_cancel_plugin(self):
         plugin = CanceledPlugin("ert")
 
-        with self.assertRaises(CancelPluginException):
+        with pytest.raises(CancelPluginException):
             plugin.getArguments()
             
     # def test_gui_ert_plugin(self):
@@ -83,4 +83,3 @@ class ErtPluginTest(ResTest):
     #
     #     arguments = plugin.getArguments()
     #     plugin.initializeAndRun([int, int], arguments)
-

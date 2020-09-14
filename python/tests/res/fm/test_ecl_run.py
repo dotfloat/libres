@@ -126,30 +126,30 @@ class EclRunTest(ResTest):
         sim = ecl_config.sim("2014.2")
         mpi_sim = ecl_config.mpi_sim("2014.2")
         ecl_run = EclRun("ECLIPSE.DATA", sim)
-        self.assertEqual( ecl_run.runPath() , os.getcwd())
+        assert ecl_run.runPath() == os.getcwd()
 
         os.mkdir("path")
         with open("path/ECLIPSE.DATA" , "w") as f:
             f.write("Mock eclipse data file")
 
         ecl_run = EclRun("path/ECLIPSE.DATA", sim)
-        self.assertEqual(ecl_run.runPath() , os.path.join(os.getcwd() , "path"))
-        self.assertEqual(ecl_run.baseName() , "ECLIPSE")
-        self.assertEqual(1, ecl_run.numCpu())
+        assert ecl_run.runPath() == os.path.join(os.getcwd() , "path")
+        assert ecl_run.baseName() == "ECLIPSE"
+        assert 1 == ecl_run.numCpu()
 
         # invalid number of CPU
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             ecl_run = EclRun("path/ECLIPSE.DATA", sim, num_cpu = "xxx")
 
         # invalid number of CPU
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             ecl_run = EclRun("path/ECLIPSE.DATA", sim, num_cpu = 10)
 
         ecl_run = EclRun("path/ECLIPSE.DATA", mpi_sim, num_cpu = "10")
-        self.assertEqual( 10 , ecl_run.numCpu())
+        assert 10 == ecl_run.numCpu()
 
         #Missing datafile
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             ecl_run = EclRun("DOES/NOT/EXIST", mpi_sim, num_cpu = "10")
 
     @pytest.mark.xfail(reason="Finding a version on Komodo of flow that is not OPM-flow")
@@ -167,13 +167,13 @@ class EclRunTest(ResTest):
         run(flow_config, ["SPE1.DATA"])
 
         flow_run = EclRun("SPE1_ERROR.DATA", sim)
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
            flow_run.runEclipse( )
 
         run(flow_config, ["SPE1_ERROR.DATA", "--ignore-errors"])
 
         # Invalid version
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             run(flow_config, ["SPE1.DATA", "--version=no/such/version"])
 
     @tmpdir()
@@ -225,9 +225,9 @@ class EclRunTest(ResTest):
         with open("out.txt") as f:
             lines = f.readlines()
 
-        self.assertEqual(len(lines), 2)
-        self.assertEqual(lines[0].strip(), "VAL1")
-        self.assertEqual(lines[1].strip(), "VAL2")
+        assert len(lines) == 2
+        assert lines[0].strip() == "VAL1"
+        assert lines[1].strip() == "VAL2"
 
     @tmpdir()
     def test_running_flow_given_no_env_config_can_still_read_parent_env(self):
@@ -278,9 +278,9 @@ class EclRunTest(ResTest):
         with open("out.txt") as f:
             lines = f.readlines()
 
-        self.assertEqual(len(lines), 2)
-        self.assertEqual(lines[0].strip(), "VAL1")
-        self.assertEqual(lines[1].strip(), "VAL2")
+        assert len(lines) == 2
+        assert lines[0].strip() == "VAL1"
+        assert lines[1].strip() == "VAL2"
 
     @tmpdir()
     def test_running_flow_given_env_variables_with_same_name_as_parent_env_variables_will_overwrite(self):
@@ -332,9 +332,9 @@ class EclRunTest(ResTest):
         with open("out.txt") as f:
             lines = f.readlines()
 
-        self.assertEqual(len(lines), 2)
-        self.assertEqual(lines[0].strip(), "OVERWRITTEN1")
-        self.assertEqual(lines[1].strip(), "OVERWRITTEN2")
+        assert len(lines) == 2
+        assert lines[0].strip() == "OVERWRITTEN1"
+        assert lines[1].strip() == "OVERWRITTEN2"
 
     @tmpdir()
     @pytest.mark.equinor_test
@@ -349,19 +349,19 @@ class EclRunTest(ResTest):
         ok_path = os.path.join(ecl_run.runPath(), "{}.OK".format(ecl_run.baseName()))
         log_path = os.path.join(ecl_run.runPath(), "{}.LOG".format(ecl_run.baseName()))
 
-        self.assertTrue(os.path.isfile(ok_path))
-        self.assertTrue(os.path.isfile(log_path))
-        self.assertTrue(os.path.getsize(log_path) > 0)
+        assert os.path.isfile(ok_path)
+        assert os.path.isfile(log_path)
+        assert os.path.getsize(log_path) > 0
 
         errors = ecl_run.parseErrors( )
-        self.assertEqual( 0 , len(errors ))
+        assert 0 == len(errors )
 
         # Monkey patching the ecl_run to use an executable which
         # will fail with exit(1); don't think Eclipse actually
         # fails with exit(1) - but let us at least be prepared
         # when/if it does.
         ecl_run.sim.executable = os.path.join( self.SOURCE_ROOT , "python/tests/res/fm/ecl_run_fail")
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             ecl_run.runEclipse( )
 
     @pytest.mark.equinor_test
@@ -372,7 +372,7 @@ class EclRunTest(ResTest):
         ecl_config = Ecl100Config( )
         run(ecl_config, ["SPE1.DATA", "--version=2014.2"])
 
-        self.assertTrue(os.path.isfile("SPE1.DATA"))
+        assert os.path.isfile("SPE1.DATA")
 
 
     @pytest.mark.equinor_test
@@ -383,12 +383,12 @@ class EclRunTest(ResTest):
         ecl_config = Ecl100Config()
         sim = ecl_config.sim("2014.2")
         ecl_run = EclRun("SPE1_ERROR", sim)
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             ecl_run.runEclipse( )
         try:
             ecl_run.runEclipse( )
         except Exception as e:
-            self.assertTrue( "ERROR" in str(e) )
+            assert  "ERROR" in str(e) 
 
 
     @pytest.mark.equinor_test
@@ -414,8 +414,8 @@ class EclRunTest(ResTest):
         shutil.copy(os.path.join(self.SOURCE_ROOT, "test-data/local/eclipse/SPE1_PARALLELL.DATA"), "SPE1_PARALLELL.DATA")
         ecl_config = Ecl100Config()
         run(ecl_config, ["SPE1_PARALLELL.DATA", "--version=2014.2", "--num-cpu=2"])
-        self.assertTrue(os.path.isfile("SPE1_PARALLELL.LOG"))
-        self.assertTrue(os.path.getsize("SPE1_PARALLELL.LOG") > 0)
+        assert os.path.isfile("SPE1_PARALLELL.LOG")
+        assert os.path.getsize("SPE1_PARALLELL.LOG") > 0
 
 
     @pytest.mark.equinor_test
@@ -427,11 +427,11 @@ class EclRunTest(ResTest):
         sim = ecl_config.sim("2014.2")
         ecl_run = EclRun("SPE1.DATA", sim)
         ret_value = ecl_run.summary_block( )
-        self.assertTrue( ret_value is None )
+        assert  ret_value is None 
 
         ecl_run.runEclipse( )
         ecl_sum = ecl_run.summary_block( )
-        self.assertTrue(isinstance(ecl_sum, EclSum))
+        assert isinstance(ecl_sum, EclSum)
 
 
     @pytest.mark.equinor_test
@@ -441,25 +441,25 @@ class EclRunTest(ResTest):
         short_case  = os.path.join(self.SOURCE_ROOT, "test-data/Equinor/ECLIPSE/ShortSummary/ECLIPSE" )
         failed_case = os.path.join(self.SOURCE_ROOT, "test-data/Equinor/ECLIPSE/SummaryFail/NOR-2013A_R002_1208-0")
 
-        with self.assertRaises(IOError):
-            self.assertTrue( EclRun.checkCase( full_case , failed_case ))
+        with pytest.raises(IOError):
+            assert  EclRun.checkCase( full_case , failed_case )
 
-        with self.assertRaises(IOError):
-            self.assertTrue( EclRun.checkCase( full_case , "DOES-NOT-EXIST" ))
+        with pytest.raises(IOError):
+            assert  EclRun.checkCase( full_case , "DOES-NOT-EXIST" )
 
-        with self.assertRaises(IOError):
-            self.assertTrue( EclRun.checkCase( "DOES-NOT-EXIST" , full_case))
+        with pytest.raises(IOError):
+            assert  EclRun.checkCase( "DOES-NOT-EXIST" , full_case)
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             EclRun.checkCase(full_case, short_case)
 
-        self.assertTrue(not os.path.isfile("CHECK_ECLIPSE_RUN.OK"))
-        self.assertTrue( EclRun.checkCase( full_case , full_case ))
-        self.assertTrue( os.path.isfile("CHECK_ECLIPSE_RUN.OK"))
+        assert not os.path.isfile("CHECK_ECLIPSE_RUN.OK")
+        assert  EclRun.checkCase( full_case , full_case )
+        assert  os.path.isfile("CHECK_ECLIPSE_RUN.OK")
 
         os.remove("CHECK_ECLIPSE_RUN.OK")
         self.assertTrue( EclRun.checkCase( short_case , full_case ))   # Simulation is longer than refcase - OK
-        self.assertTrue( os.path.isfile("CHECK_ECLIPSE_RUN.OK"))
+        assert  os.path.isfile("CHECK_ECLIPSE_RUN.OK")
 
 
     @pytest.mark.equinor_test
@@ -475,7 +475,7 @@ class EclRunTest(ResTest):
         ecl_run = EclRun("SPE1.DATA", sim)
 
         error_list = ecl_run.parseErrors()
-        self.assertEqual( len(error_list), 2)
+        assert len(error_list) == 2
 
 
         # NB: The ugly white space in the error0 literal is actually part of
@@ -488,5 +488,5 @@ class EclRunTest(ResTest):
         error1 = """ @--  ERROR  AT TIME        0.0   DAYS    ( 1-JAN-0):
  @           INCLUDE FILES MISSING.                                          """
 
-        self.assertEqual( error_list[0], error0)
-        self.assertEqual( error_list[1], error1)
+        assert error_list[0] == error0
+        assert error_list[1] == error1

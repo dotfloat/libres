@@ -36,20 +36,20 @@ class RMSConfigTest(ResTest):
     @tmpdir()
     def test_load(self):
         self.monkeypatch.setenv("RMS_SITE_CONFIG", "file/does/not/exist")
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             conf = RMSConfig()
 
         self.monkeypatch.setenv("RMS_SITE_CONFIG", os.path.join(self.SOURCE_ROOT, "python/res/fm/rms/rms_config.yml"))
         conf = RMSConfig()
 
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             exe = conf.executable
 
         with open("file.yml","w") as f:
             f.write("this:\n -should\n-be\ninvalid:yaml?")
 
         self.monkeypatch.setenv("RMS_SITE_CONFIG", "file.yml")
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             conf = RMSConfig()
 
         os.mkdir("bin")
@@ -61,15 +61,15 @@ class RMSConfigTest(ResTest):
             f.write("executable: bin/rms")
 
         conf = RMSConfig()
-        self.assertEqual(conf.executable, "bin/rms")
-        self.assertIsNone(conf.threads)
+        assert conf.executable == "bin/rms"
+        assert conf.threads is None
 
         with open("file.yml", "w") as f:
             f.write("executable: bin/rms\n")
             f.write("threads: 17")
 
         conf = RMSConfig()
-        self.assertEqual(conf.threads, 17)
+        assert conf.threads == 17
 
 if __name__ == "__main__":
     unittest.main()

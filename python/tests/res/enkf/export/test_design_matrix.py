@@ -25,67 +25,67 @@ class DesignMatrixTest(ResTest):
         dumpDesignMatrix1("DesignMatrix.txt")
         dm = DesignMatrixReader.loadDesignMatrix("DesignMatrix.txt")
 
-        self.assertEqual(dm["CORR_SEIS_HEIMDAL"][0], 0.8)
-        self.assertEqual(dm["VOL_FRAC_HEIMDAL"][0], 0.08)
-        self.assertEqual(dm["AZIM_IND_HEIMDAL"][0], 125)
-        self.assertEqual(dm["VARIO_PARAL_HEIMDAL"][0], 1000)
-        self.assertEqual(dm["VARIO_NORM_HEIMDAL"][0], 500)
-        self.assertEqual(dm["VARIO_VERT_HEIMDAL"][0], 25)
-        self.assertEqual(dm["SEIS_COND_HEIMDAL"][0], "ON")
+        assert dm["CORR_SEIS_HEIMDAL"][0] == 0.8
+        assert dm["VOL_FRAC_HEIMDAL"][0] == 0.08
+        assert dm["AZIM_IND_HEIMDAL"][0] == 125
+        assert dm["VARIO_PARAL_HEIMDAL"][0] == 1000
+        assert dm["VARIO_NORM_HEIMDAL"][0] == 500
+        assert dm["VARIO_VERT_HEIMDAL"][0] == 25
+        assert dm["SEIS_COND_HEIMDAL"][0] == "ON"
 
-        self.assertEqual(dm["CORR_SEIS_HEIMDAL"][1], 0.8)
-        self.assertEqual(dm["VOL_FRAC_HEIMDAL"][1], 0.15)
-        self.assertEqual(dm["AZIM_IND_HEIMDAL"][1], 125)
-        self.assertEqual(dm["VARIO_PARAL_HEIMDAL"][1], 2000)
-        self.assertEqual(dm["VARIO_NORM_HEIMDAL"][1], 1000)
-        self.assertEqual(dm["VARIO_VERT_HEIMDAL"][1], 25)
-        self.assertEqual(dm["SEIS_COND_HEIMDAL"][1], "ON")
+        assert dm["CORR_SEIS_HEIMDAL"][1] == 0.8
+        assert dm["VOL_FRAC_HEIMDAL"][1] == 0.15
+        assert dm["AZIM_IND_HEIMDAL"][1] == 125
+        assert dm["VARIO_PARAL_HEIMDAL"][1] == 2000
+        assert dm["VARIO_NORM_HEIMDAL"][1] == 1000
+        assert dm["VARIO_VERT_HEIMDAL"][1] == 25
+        assert dm["SEIS_COND_HEIMDAL"][1] == "ON"
 
-        self.assertEqual(dm["CORR_SEIS_HEIMDAL"][2], 0.8)
-        self.assertEqual(dm["VOL_FRAC_HEIMDAL"][2], 0.20)
-        self.assertEqual(dm["AZIM_IND_HEIMDAL"][2], 125)
-        self.assertEqual(dm["VARIO_PARAL_HEIMDAL"][2], 4000)
-        self.assertEqual(dm["VARIO_NORM_HEIMDAL"][2], 2000)
-        self.assertEqual(dm["VARIO_VERT_HEIMDAL"][2], 25)
-        self.assertEqual(dm["SEIS_COND_HEIMDAL"][2], "ON")
+        assert dm["CORR_SEIS_HEIMDAL"][2] == 0.8
+        assert dm["VOL_FRAC_HEIMDAL"][2] == 0.20
+        assert dm["AZIM_IND_HEIMDAL"][2] == 125
+        assert dm["VARIO_PARAL_HEIMDAL"][2] == 4000
+        assert dm["VARIO_NORM_HEIMDAL"][2] == 2000
+        assert dm["VARIO_VERT_HEIMDAL"][2] == 25
+        assert dm["SEIS_COND_HEIMDAL"][2] == "ON"
 
     @tmpdir()
     def test_read_design_matrix_2(self):
         dumpDesignMatrix2("DesignMatrix2.txt")
         dm = DesignMatrixReader.loadDesignMatrix("DesignMatrix2.txt")
 
-        self.assertEqual(dm["CORR_SEIS_HEIMDAL"][0], 0.8)
-        self.assertEqual(dm["VOL_FRAC_HEIMDAL"][0], 0.08)
-        self.assertEqual(dm["AZIM_IND_HEIMDAL"][0], 125)
-        self.assertEqual(dm["VARIO_PARAL_HEIMDAL"][0], 1000)
-        self.assertEqual(dm["VARIO_NORM_HEIMDAL"][0], 500)
-        self.assertEqual(dm["VARIO_VERT_HEIMDAL"][0], 25)
-        self.assertEqual(dm["SEIS_COND_HEIMDAL"][0], "ON")
+        assert dm["CORR_SEIS_HEIMDAL"][0] == 0.8
+        assert dm["VOL_FRAC_HEIMDAL"][0] == 0.08
+        assert dm["AZIM_IND_HEIMDAL"][0] == 125
+        assert dm["VARIO_PARAL_HEIMDAL"][0] == 1000
+        assert dm["VARIO_NORM_HEIMDAL"][0] == 500
+        assert dm["VARIO_VERT_HEIMDAL"][0] == 25
+        assert dm["SEIS_COND_HEIMDAL"][0] == "ON"
 
-        self.assertEqual(dm["CORR_SEIS_HEIMDAL"][1], 0.8)
-        self.assertEqual(dm["VOL_FRAC_HEIMDAL"][1], 0.15)
-        self.assertEqual(dm["AZIM_IND_HEIMDAL"][1], 125)
-        self.assertEqual(dm["VARIO_PARAL_HEIMDAL"][1], 2000)
-        self.assertEqual(dm["VARIO_NORM_HEIMDAL"][1], 1000)
-        self.assertEqual(dm["VARIO_VERT_HEIMDAL"][1], 25)
-        self.assertEqual(dm["SEIS_COND_HEIMDAL"][1], "ON")
+        assert dm["CORR_SEIS_HEIMDAL"][1] == 0.8
+        assert dm["VOL_FRAC_HEIMDAL"][1] == 0.15
+        assert dm["AZIM_IND_HEIMDAL"][1] == 125
+        assert dm["VARIO_PARAL_HEIMDAL"][1] == 2000
+        assert dm["VARIO_NORM_HEIMDAL"][1] == 1000
+        assert dm["VARIO_VERT_HEIMDAL"][1] == 25
+        assert dm["SEIS_COND_HEIMDAL"][1] == "ON"
 
-        self.assertEqual(dm["CORR_SEIS_HEIMDAL"][2], 0.8)
-        self.assertEqual(dm["VOL_FRAC_HEIMDAL"][2], 0.20)
-        self.assertEqual(dm["AZIM_IND_HEIMDAL"][2], 125)
-        self.assertEqual(dm["VARIO_PARAL_HEIMDAL"][2], 4000)
-        self.assertEqual(dm["VARIO_NORM_HEIMDAL"][2], 2000)
-        self.assertEqual(dm["VARIO_VERT_HEIMDAL"][2], 25)
-        self.assertEqual(dm["SEIS_COND_HEIMDAL"][2], "ON")
+        assert dm["CORR_SEIS_HEIMDAL"][2] == 0.8
+        assert dm["VOL_FRAC_HEIMDAL"][2] == 0.20
+        assert dm["AZIM_IND_HEIMDAL"][2] == 125
+        assert dm["VARIO_PARAL_HEIMDAL"][2] == 4000
+        assert dm["VARIO_NORM_HEIMDAL"][2] == 2000
+        assert dm["VARIO_VERT_HEIMDAL"][2] == 25
+        assert dm["SEIS_COND_HEIMDAL"][2] == "ON"
 
 
-        with self.assertRaises(KeyError):
-            self.assertEqual(dm["CORR_SEIS_HEIMDAL"][3], 0.8)
+        with pytest.raises(KeyError):
+            assert dm["CORR_SEIS_HEIMDAL"][3] == 0.8
 
-        self.assertEqual(dm["CORR_SEIS_HEIMDAL"][4], 0.8)
-        self.assertEqual(dm["VOL_FRAC_HEIMDAL"][4], 0.30)
-        self.assertEqual(dm["AZIM_IND_HEIMDAL"][4], 125)
-        self.assertEqual(dm["VARIO_PARAL_HEIMDAL"][4], 16000)
-        self.assertEqual(dm["VARIO_NORM_HEIMDAL"][4], 8000)
-        self.assertEqual(dm["VARIO_VERT_HEIMDAL"][4], 25)
-        self.assertEqual(dm["SEIS_COND_HEIMDAL"][4], "ON")
+        assert dm["CORR_SEIS_HEIMDAL"][4] == 0.8
+        assert dm["VOL_FRAC_HEIMDAL"][4] == 0.30
+        assert dm["AZIM_IND_HEIMDAL"][4] == 125
+        assert dm["VARIO_PARAL_HEIMDAL"][4] == 16000
+        assert dm["VARIO_NORM_HEIMDAL"][4] == 8000
+        assert dm["VARIO_VERT_HEIMDAL"][4] == 25
+        assert dm["SEIS_COND_HEIMDAL"][4] == "ON"

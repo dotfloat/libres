@@ -90,8 +90,8 @@ class ModelConfigTest(ResTest):
         model_config = res_config.model_config
         ecl_config = res_config.ecl_config
 
-        self.assertTrue( ecl_config.active( ) )
-        self.assertEqual( "JOBNAME%d" , model_config.getJobnameFormat())
+        assert  ecl_config.active( ) 
+        assert "JOBNAME%d" == model_config.getJobnameFormat()
 
     @tmpdir(local="simple_config")
     def test_eclbase(self):
@@ -99,8 +99,8 @@ class ModelConfigTest(ResTest):
         model_config = res_config.model_config
         ecl_config = res_config.ecl_config
 
-        self.assertTrue( ecl_config.active( ) )
-        self.assertEqual( "ECLBASE%d" , model_config.getJobnameFormat( ))
+        assert  ecl_config.active( ) 
+        assert "ECLBASE%d" == model_config.getJobnameFormat( )
 
     @tmpdir(local="simple_config")
     def test_jobname(self):
@@ -108,8 +108,8 @@ class ModelConfigTest(ResTest):
         model_config = res_config.model_config
         ecl_config = res_config.ecl_config
 
-        self.assertFalse( ecl_config.active( ) )
-        self.assertEqual( "JOBNAME%d" , model_config.getJobnameFormat( ))
+        assert not  ecl_config.active( ) 
+        assert "JOBNAME%d" == model_config.getJobnameFormat( )
 
     @tmpdir(local="configuration_tests")
     def test_model_config_dict_constructor(self):
@@ -149,7 +149,7 @@ class ModelConfigTest(ResTest):
                                    last_history_restart=res_config.ecl_config.getLastHistoryRestart(),
                                    refcase=res_config.ecl_config.getRefcase(),
                                    config_dict=config_dict)
-        self.assertEqual(model_config, res_config.model_config)
+        assert model_config == res_config.model_config
 
     @tmpdir(local="configuration_tests")
     def test_schedule_file_as_history_is_disallowed(self):
@@ -163,4 +163,4 @@ class ModelConfigTest(ResTest):
         expected = "{} as {} is not supported".format(
             str(HistorySourceEnum.SCHEDULE), ConfigKeys.HISTORY_SOURCE
         )
-        self.assertIn(expected, str(cm.exception))
+        assert expected in str(cm.exception)

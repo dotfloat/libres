@@ -73,7 +73,7 @@ class SimulationBatchTest(ResTest):
 
             ert.createRunpath( run_context )
             num = ert.getEnkfSimulationRunner().runEnsembleExperiment(job_queue, run_context)
-            self.assertEqual(num, batch_size)
+            assert num == batch_size
 
             order_result = EnkfNode( ens_config["ORDER"] )
             injection_result = EnkfNode( ens_config["INJECTION"] )
@@ -84,6 +84,6 @@ class SimulationBatchTest(ResTest):
                 data = order_result.asGenData( )
 
                 order_node.load( sim_fs , node_id )
-                self.assertEqual( order_node_ext["W1"] , data[0])
-                self.assertEqual( order_node_ext["W2"] , data[1])
-                self.assertEqual( order_node_ext["W3"] , data[2])
+                assert order_node_ext["W1"] == data[0]
+                assert order_node_ext["W2"] == data[1]
+                assert order_node_ext["W3"] == data[2]

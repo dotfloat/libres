@@ -1,9 +1,9 @@
 import os.path
 import json
+import pytest
 
 from res.enkf.data import ExtParam
 from res.enkf.config import ExtParamConfig
-from tests import ResTest, tmpdir
 
 
 class ExtParamTest(ResTest):
@@ -11,21 +11,21 @@ class ExtParamTest(ResTest):
     def test_config(self):
         input_keys = ["key1","key2","key3"]
         config = ExtParamConfig("Key" , input_keys)
-        self.assertTrue( len(config), 3 )
+        assert  len(config), 3 
 
         for i in range(len(config)):
             configkey, _ = config[i]
-            self.assertEqual(configkey , input_keys[i])
+            assert configkey == input_keys[i]
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             c = config[100]
 
         keys = []
         for key in config.keys():
             keys.append( key )
-        self.assertEqual(keys , input_keys)
+        assert keys == input_keys
 
-        self.assertIn( "key1" , config )
+        assert "key1" in config
 
 
     def test_config_with_suffixes(self):
@@ -40,32 +40,32 @@ class ExtParamTest(ResTest):
             }
         config = ExtParamConfig("Key" , input_dict)
 
-        self.assertTrue( len(config), 3 )
-        self.assertIn("key3" , config)
-        self.assertNotIn("not_me" , config)
-        self.assertIn(("key3", "asd") , config)
-        self.assertNotIn(("key3", "not_me_either") , config)
-        self.assertNotIn(("who", "b") , config)
+        assert  len(config), 3 
+        assert "key3" in config
+        assert "not_me" not in config
+        assert ("key3", "asd") in config
+        assert ("key3", "not_me_either") not in config
+        assert ("who", "b") not in config
 
         for i in range(len(config)):
             configkey, configsuffixes = config[i]
-            self.assertIn(configkey, input_dict)
-            self.assertIn(configsuffixes, input_suffixes)
+            assert configkey in input_dict
+            assert configsuffixes in input_suffixes
 
         for k in input_dict:
             configsuffixes = config[k]
-            self.assertIn(configsuffixes, input_suffixes)
+            assert configsuffixes in input_suffixes
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             c = config[100]
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             c = config['no_such_key']
 
-        self.assertEqual(set(config.keys()), set(input_dict.keys()))
+        assert set(config.keys()) == set(input_dict.keys())
 
         d = { k: s for k, s in config.items()}
-        self.assertEqual(d , input_dict)
+        assert d == input_dict
 
     @tmpdir()
     def test_data(self):
@@ -73,34 +73,34 @@ class ExtParamTest(ResTest):
         config = ExtParamConfig("Key" , input_keys)
         data = ExtParam( config )
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             d = data[100]
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             d = data[-4]
 
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             d = data["NoSuchKey"]
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             d = data["key1", "a_suffix"]
 
-        self.assertIn( "key1" , data )
+        assert "key1" in data
         data[0] = 177
-        self.assertEqual(data[0] , 177)
+        assert data[0] == 177
 
         data["key2"] = 321
-        self.assertEqual(data[-2] , 321)
+        assert data[-2] == 321
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             data.set_vector( [1,2] )
 
         data.set_vector( [1,2,3] )
         for i in range(len(data)):
-            self.assertEqual( i + 1 , data[i] )
+            assert i + 1 == data[i]
 
         data.export( "file.json" )
         d = json.load( open("file.json"))
         for key in data.config.keys():
-            self.assertEqual( data[key] , d[key] )
+            assert data[key] == d[key]
 
     def test_data_with_suffixes(self):
         input_suffixes = [["a", "b", "c"],
@@ -115,26 +115,25 @@ class ExtParamTest(ResTest):
         config = ExtParamConfig("Key" , input_dict)
         data = ExtParam( config )
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             d = data[0]  # Cannot use indices when we have suffixes
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             d = data["key1", 1]
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             d = data["NoSuchKey"]
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             d = data["key1"]  # requires a suffix
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             d = data["key1", "no_such_suffix"]
 
         data["key1", "a"] = 1
         data["key1", "b"] = 500.5
         data["key2", "2"] = 2.1
         data["key3", "asd"] = -85
-        self.assertEqual(data["key1", "a"], 1)
-        self.assertEqual(data["key1", "b"], 500.5)
-        self.assertEqual(data["key2", "2"], 2.1)
-        self.assertEqual(data["key3", "asd"], -85)
+        assert data["key1", "a"] == 1
+        assert data["key1", "b"] == 500.5
+        assert data["key2", "2"] == 2.1
+        assert data["key3", "asd"] == -85
 
         # We don't know what the value is, but it should be possible to read it
         _ = data["key3", "zxc"]
-

@@ -276,7 +276,7 @@ class ForwardModelFormattedPrintTest(ResTest):
                 )
 
         if ext_job_config["environment"] is None:
-            self.assertTrue(len(ext_job.get_environment().keys()) == 0)
+            assert len(ext_job.get_environment().keys()) == 0
         else:
             self.assertEqual(
                     ext_job.get_environment().keys(),
@@ -325,16 +325,16 @@ class ForwardModelFormattedPrintTest(ResTest):
         return forward_model
 
     def verify_json_dump(self, selected_jobs, global_args, umask, run_id):
-        self.assertTrue(os.path.isfile(self.JOBS_JSON_FILE))
+        assert os.path.isfile(self.JOBS_JSON_FILE)
         config = load_configs(self.JOBS_JSON_FILE)
 
-        self.assertEqual(run_id , config["run_id"])
-        self.assertEqual(umask, int(config["umask"], 8))
-        self.assertEqual(len(selected_jobs), len(config["jobList"]))
+        assert run_id == config["run_id"]
+        assert umask == int(config["umask"], 8)
+        assert len(selected_jobs) == len(config["jobList"])
 
         ert_version = config["ert_version"]
         loaded_version = Version(ert_version[0], ert_version[1], ert_version[2])
-        self.assertEqual(EclVersion(), loaded_version)
+        assert EclVersion() == loaded_version
 
         for i in range(len(selected_jobs)):
             job = joblist[selected_jobs[i]]
@@ -351,11 +351,11 @@ class ForwardModelFormattedPrintTest(ResTest):
             for key in json_keywords:
 
                 if (key == "stdout"):
-                  self.assertEqual(create_stdout_file(job), loaded_job[key])
+                  assert create_stdout_file(job) == loaded_job[key]
                 elif (key == "stderr"):
-                  self.assertEqual(create_stderr_file(job), loaded_job[key])
+                  assert create_stderr_file(job) == loaded_job[key]
                 else:
-                  self.assertEqual(job[key], loaded_job[key])
+                  assert job[key] == loaded_job[key]
 
             job["argList"] = arg_list_back_up
             job["name"] = name_back_up
@@ -412,9 +412,9 @@ class ForwardModelFormattedPrintTest(ResTest):
                 EnvironmentVarlist())
             config = load_configs(self.JOBS_JSON_FILE)
             printed_job = config["jobList"][0]
-            self.assertEqual(printed_job["min_arg"], 2)
-            self.assertEqual(printed_job["max_arg"], 6)
-            self.assertEqual(printed_job["arg_types"], ["INT", "FLOAT", "STRING", "BOOL", "RUNTIME_FILE", "RUNTIME_INT"])
+            assert printed_job["min_arg"] == 2
+            assert printed_job["max_arg"] == 6
+            assert printed_job["arg_types"] == ["INT", "FLOAT", "STRING", "BOOL", "RUNTIME_FILE", "RUNTIME_INT"]
 
 
 
@@ -433,7 +433,7 @@ class ForwardModelFormattedPrintTest(ResTest):
         varlist[first] = first_value
         varlist[second] = second_value
         varlist[third] = third_value
-        self.assertEqual(len(varlist), 3)
+        assert len(varlist) == 3
         with TestAreaContext("python/job_queue/env_varlist"):
             forward_model = self.set_up_forward_model([])
             run_id = "test_no_jobs_id"
@@ -448,9 +448,9 @@ class ForwardModelFormattedPrintTest(ResTest):
                 varlist)
             config = load_configs(self.JOBS_JSON_FILE)
             env_config = config[varlist_string]
-            self.assertEqual(first_value, env_config[first]  )
-            self.assertEqual(second_value, env_config[second] )
-            self.assertEqual(third_value_correct, env_config[third])
+            assert first_value == env_config[first]
+            assert second_value == env_config[second]
+            assert third_value_correct == env_config[third]
             update_config = config[update_string]
 
 
@@ -458,7 +458,7 @@ class ForwardModelFormattedPrintTest(ResTest):
     def test_repr(self):
         with TestAreaContext("python/job_queue/forward_model_one_job"):
             forward_model = self.set_up_forward_model()
-            self.assertTrue(repr(forward_model).startswith('ForwardModel'))
+            assert repr(forward_model).startswith('ForwardModel')
 
     def test_one_job(self):
         with TestAreaContext("python/job_queue/forward_model_one_job"):
@@ -555,5 +555,5 @@ class ForwardModelFormattedPrintTest(ResTest):
 
             status = ForwardModelStatus.try_load("")
             for job in status.jobs:
-                self.assertTrue( isinstance(job.start_time, datetime.datetime))
-                self.assertTrue( isinstance(job.end_time, datetime.datetime))
+                assert  isinstance(job.start_time, datetime.datetime)
+                assert  isinstance(job.end_time, datetime.datetime)

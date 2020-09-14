@@ -72,16 +72,16 @@ class ExportJoinTest(ResTest):
             self.assertFloatEqual(result["SNAKE_OIL_PARAM:OP1_OCTAVES"][24][last_date], 4.206698)
 
             self.assertFloatEqual(result["EXTRA_FLOAT_COLUMN"][0][first_date], 0.08)
-            self.assertEqual(result["EXTRA_INT_COLUMN"][0][first_date], 125)
-            self.assertEqual(result["EXTRA_STRING_COLUMN"][0][first_date], "ON")
+            assert result["EXTRA_INT_COLUMN"][0][first_date] == 125
+            assert result["EXTRA_STRING_COLUMN"][0][first_date] == "ON"
 
             self.assertFloatEqual(result["EXTRA_FLOAT_COLUMN"][0][last_date], 0.08)
-            self.assertEqual(result["EXTRA_INT_COLUMN"][0][last_date], 125)
-            self.assertEqual(result["EXTRA_STRING_COLUMN"][0][last_date], "ON")
+            assert result["EXTRA_INT_COLUMN"][0][last_date] == 125
+            assert result["EXTRA_STRING_COLUMN"][0][last_date] == "ON"
 
             self.assertFloatEqual(result["EXTRA_FLOAT_COLUMN"][1][last_date], 0.07)
-            self.assertEqual(result["EXTRA_INT_COLUMN"][1][last_date], 225)
-            self.assertEqual(result["EXTRA_STRING_COLUMN"][1][last_date], "OFF")
+            assert result["EXTRA_INT_COLUMN"][1][last_date] == 225
+            assert result["EXTRA_STRING_COLUMN"][1][last_date] == "OFF"
 
             self.assertFloatEqual(result["MISFIT:FOPR"][0][last_date], 457.491003)
             self.assertFloatEqual(result["MISFIT:FOPR"][24][last_date], 1630.774198)
@@ -91,10 +91,10 @@ class ExportJoinTest(ResTest):
             self.assertFloatEqual(result["MISFIT:TOTAL"][24][last_date], 1714.662370)
 
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 realization_13 = result.loc[60]
 
             column_count = len(result.columns)
-            self.assertEqual(result.dtypes[0], numpy.float64)
-            self.assertEqual(result.dtypes[column_count - 1], numpy.object)
-            self.assertEqual(result.dtypes[column_count - 2], numpy.int64)
+            assert result.dtypes[0] == numpy.float64
+            assert result.dtypes[column_count - 1] == numpy.object
+            assert result.dtypes[column_count - 2] == numpy.int64

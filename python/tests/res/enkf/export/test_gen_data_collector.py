@@ -10,10 +10,10 @@ class GenDataCollectorTest(ResTest):
         with ErtTestContext("python/enkf/export/gen_data_collector", config) as context:
             ert = context.getErt()
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 data = GenDataCollector.loadGenData(ert, "default_0", "RFT_XX", 199)
 
-            with self.assertRaises(ValueError):
+            with pytest.raises(ValueError):
                 data = GenDataCollector.loadGenData(ert, "default_0", "SNAKE_OIL_OPR_DIFF", 198)
 
             data1 = GenDataCollector.loadGenData(ert, "default_0", "SNAKE_OIL_OPR_DIFF", 199)

@@ -8,15 +8,14 @@ class LocalObsdataNodeTest(ResTest):
 
     def test_tstep(self):
         node = LocalObsdataNode("KEY")
-        self.assertTrue( node.allTimeStepActive() )
-        self.assertTrue( node.tstepActive( 10 ))
-        self.assertTrue( node.tstepActive( 0 ))
+        assert  node.allTimeStepActive() 
+        assert  node.tstepActive( 10 )
+        assert  node.tstepActive( 0 )
 
         node.addTimeStep(10)
-        self.assertFalse( node.allTimeStepActive() )
+        assert not  node.allTimeStepActive() 
 
-        self.assertTrue( node.tstepActive( 10 ))
-        self.assertFalse( node.tstepActive( 0 ))
-
+        assert  node.tstepActive( 10 )
+        assert not  node.tstepActive( 0 )
 
 

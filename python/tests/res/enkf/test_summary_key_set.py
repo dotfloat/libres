@@ -16,23 +16,23 @@ class SummaryKeySetTest(ResTest):
 
         keys = SummaryKeySet()
 
-        self.assertEqual(len(keys), 0)
+        assert len(keys) == 0
 
-        self.assertTrue(keys.addSummaryKey("FOPT"))
+        assert keys.addSummaryKey("FOPT")
 
-        self.assertEqual(len(keys), 1)
+        assert len(keys) == 1
 
-        self.assertTrue("FOPT" in keys)
+        assert "FOPT" in keys
 
-        self.assertItemsEqual(["FOPT"], keys.keys())
+        assert set(["FOPT"]) == set(keys.keys())
 
-        self.assertTrue(keys.addSummaryKey("WWCT"))
+        assert keys.addSummaryKey("WWCT")
 
-        self.assertEqual(len(keys), 2)
+        assert len(keys) == 2
 
-        self.assertTrue("WWCT" in keys)
+        assert "WWCT" in keys
 
-        self.assertItemsEqual(["WWCT", "FOPT"], keys.keys())
+        assert set(["WWCT", "FOPT"]) == set(keys.keys())
 
 
 
@@ -47,10 +47,10 @@ class SummaryKeySetTest(ResTest):
         keys.writeToFile(filename)
 
         keys_from_file = SummaryKeySet(filename, read_only=True)
-        self.assertItemsEqual(keys.keys(), keys_from_file.keys())
+        assert set(keys.keys()) == set(keys_from_file.keys())
 
-        self.assertTrue(keys_from_file.isReadOnly())
-        self.assertFalse(keys_from_file.addSummaryKey("WOPR"))
+        assert keys_from_file.isReadOnly()
+        assert not keys_from_file.addSummaryKey("WOPR")
 
     @tmpdir()
     def test_write_to_and_read_from_file(self):
@@ -61,14 +61,14 @@ class SummaryKeySetTest(ResTest):
 
         filename = "test.txt"
 
-        self.assertFalse(os.path.exists(filename))
+        assert not os.path.exists(filename)
 
         keys.writeToFile(filename)
 
-        self.assertTrue(os.path.exists(filename))
+        assert os.path.exists(filename)
 
         keys_from_file = SummaryKeySet(filename)
-        self.assertItemsEqual(keys.keys(), keys_from_file.keys())
+        assert set(keys.keys()) == set(keys_from_file.keys())
 
     @tmpdir(equinor="config/with_data")
     def test_with_enkf_fs(self):
@@ -85,13 +85,13 @@ class SummaryKeySetTest(ResTest):
         ert = EnKFMain(res_config)
         fs = ert.getEnkfFsManager().getCurrentFileSystem()
         summary_key_set = fs.getSummaryKeySet()
-        self.assertTrue("FOPT" in summary_key_set)
-        self.assertTrue("WWCT" in summary_key_set)
-        self.assertTrue("WOPR" in summary_key_set)
+        assert "FOPT" in summary_key_set
+        assert "WWCT" in summary_key_set
+        assert "WOPR" in summary_key_set
 
         ensemble_config = ert.ensembleConfig()
 
-        self.assertTrue("FOPT" in ensemble_config)
-        self.assertTrue("WWCT" in ensemble_config)
-        self.assertTrue("WOPR" in ensemble_config)
-        self.assertFalse("TCPU" in ensemble_config)
+        assert "FOPT" in ensemble_config
+        assert "WWCT" in ensemble_config
+        assert "WOPR" in ensemble_config
+        assert not "TCPU" in ensemble_config

@@ -55,7 +55,7 @@ class LocalDatasetTest(ResTest):
             ecl_reg = EclRegion(grid, False)
             ecl_reg.select_islice(10, 20)
             data_scale.addField('PERMX', ecl_reg)
-            self.assertEqual(1, len(data_scale))
+            assert 1 == len(data_scale)
 
     @tmpdir()
     def test_local_surface(self):
@@ -69,7 +69,7 @@ class LocalDatasetTest(ResTest):
             ps = surf.getPointset()
             geo_reg = GeoRegion(ps)
             data_scale.addSurface('TOP', geo_reg)
-            self.assertEqual(1, len(data_scale))
+            assert 1 == len(data_scale)
 
     @tmpdir()
     def test_local_dataset(self):
@@ -80,30 +80,30 @@ class LocalDatasetTest(ResTest):
 
             # Creating dataset
             data_scale = local_config.createDataset('DATA_SCALE')
-            self.assertTrue(isinstance(data_scale, LocalDataset))
+            assert isinstance(data_scale, LocalDataset)
 
             # Try to add existing dataset
-            with self.assertRaises(ValueError):
+            with pytest.raises(ValueError):
                 local_config.createDataset('DATA_SCALE')
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 data_scale.addNode('KEY_NOTIN_ENSEMBLE')
 
-            self.assertEqual(0, len(data_scale))
+            assert 0 == len(data_scale)
             data_scale.addNode('PERLIN_PARAM')
-            self.assertEqual(1, len(data_scale))
+            assert 1 == len(data_scale)
             active_list = data_scale.getActiveList('PERLIN_PARAM')
-            self.assertTrue(isinstance(active_list, ActiveList))
+            assert isinstance(active_list, ActiveList)
             active_list.addActiveIndex(0)
-            self.assertTrue('PERLIN_PARAM' in data_scale)
-            self.assertFalse('KEY_NOTIN_ENSEMBLE' in data_scale)
+            assert 'PERLIN_PARAM' in data_scale
+            assert not 'KEY_NOTIN_ENSEMBLE' in data_scale
 
             ministep = local_config.createMinistep('MINISTEP')
             ministep.attachDataset(data_scale)
-            self.assertTrue('DATA_SCALE' in ministep)
+            assert 'DATA_SCALE' in ministep
             data_scale_get = ministep['DATA_SCALE']
-            self.assertTrue('PERLIN_PARAM' in data_scale_get)
+            assert 'PERLIN_PARAM' in data_scale_get
 
             # Error when adding existing data node
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 data_scale.addNode('PERLIN_PARAM')

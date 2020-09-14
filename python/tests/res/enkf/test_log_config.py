@@ -94,10 +94,10 @@ class LogConfigTest(ResTest):
         log_config = LogConfig(user_config_file=self.config_file)
         res_config = ResConfig(self.config_file)
         log_config_dict = LogConfig(config_dict=config_dict)
-        self.assertEqual(log_config, log_config_dict)
-        self.assertEqual(log_config, res_config.log_config)
+        assert log_config == log_config_dict
+        assert log_config == res_config.log_config
 
-        self.assertTrue(os.path.isabs(log_config.log_file))
+        assert os.path.isabs(log_config.log_file)
 
         self.assertEqual(
                 os.path.normpath(log_config.log_file),

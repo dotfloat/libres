@@ -11,9 +11,9 @@ class ObsBlockTest(ResTest):
 
     def test_create(self):
         block = ObsBlock("OBS" , 1000)
-        self.assertTrue( isinstance( block , ObsBlock ))
-        self.assertEqual( 1000 , block.totalSize())
-        self.assertEqual( 0 , block.activeSize())
+        assert  isinstance( block , ObsBlock )
+        assert 1000 == block.totalSize()
+        assert 0 == block.activeSize()
 
 
 
@@ -21,30 +21,30 @@ class ObsBlockTest(ResTest):
         obs_size = 10
         block = ObsBlock("OBS" , obs_size)
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             block[100] = (1,1)
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             block[-100] = (1,1)
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             block[4] = 10
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             block[4] = (1,1,9)
 
         #------
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             v = block[100]
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             v = block[-100]
 
         block[0] = (10,1)
         v = block[0]
-        self.assertEqual( v , (10,1))
-        self.assertEqual( 1 , block.activeSize())
+        assert v == (10,1)
+        assert 1 == block.activeSize()
 
         block[-1] = (17,19)
-        self.assertEqual( block[-1], (17,19))
+        assert block[-1] == (17,19)

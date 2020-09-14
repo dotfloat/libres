@@ -27,7 +27,7 @@ class RunpathListTestErt(ResTest):
         with ErtTestContext("create_runpath_export" , self.createTestPath("local/snake_oil_no_data/snake_oil.ert")) as tc:
             ert = tc.getErt( )
             runpath_list = ert.getRunpathList( )
-            self.assertFalse( os.path.isfile( runpath_list.getExportFile( ) ))
+            assert not  os.path.isfile( runpath_list.getExportFile( ) )
 
             ens_size = ert.getEnsembleSize( )
             runner = ert.getEnkfSimulationRunner( )
@@ -43,8 +43,8 @@ class RunpathListTestErt(ResTest):
 
             runner.createRunPath( run_context1 )
 
-            self.assertTrue( os.path.isfile( runpath_list.getExportFile( ) ))
-            self.assertEqual( "test_runpath_list.txt" , os.path.basename( runpath_list.getExportFile( ) ))
+            assert  os.path.isfile( runpath_list.getExportFile( ) )
+            assert "test_runpath_list.txt" == os.path.basename( runpath_list.getExportFile( ) )
 
     @tmpdir()
     def test_assert_symlink_deleted(self):
@@ -78,6 +78,5 @@ class RunpathListTestErt(ResTest):
             runner.createRunPath( run_context )
 
             # ensure field symlink is replaced by file
-            self.assertFalse( os.path.islink(linkpath) )
-
+            assert not  os.path.islink(linkpath) 
 

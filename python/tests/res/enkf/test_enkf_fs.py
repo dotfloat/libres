@@ -17,34 +17,33 @@ class EnKFFSTest(ResTest):
 
 
     def test_id_enum(self):
-        self.assertEnumIsFullyDefined(EnKFFSType, "fs_driver_impl", "lib/include/ert/enkf/fs_types.hpp")
+        res_helper.assert_enum_fully_defined(EnKFFSType, "fs_driver_impl", "lib/include/ert/enkf/fs_types.hpp")
 
     @tmpdir(equinor="config/with_data/config")
     def test_create(self):
-        self.assertTrue(EnkfFs.exists(self.mount_point))
+        assert EnkfFs.exists(self.mount_point)
         fs = EnkfFs(self.mount_point)
-        self.assertEqual(1, fs.refCount())
+        assert 1 == fs.refCount()
         fs.umount()
 
-        self.assertFalse(EnkfFs.exists("newFS"))
+        assert not EnkfFs.exists("newFS")
         arg = None
         fs = EnkfFs.createFileSystem("newFS", EnKFFSType.BLOCK_FS_DRIVER_ID, arg)
-        self.assertTrue(EnkfFs.exists("newFS"))
-        self.assertTrue( fs is None )
+        assert EnkfFs.exists("newFS")
+        assert  fs is None 
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             version = EnkfFs.diskVersion("does/not/exist")
 
         version = EnkfFs.diskVersion("newFS")
-        self.assertTrue( version >= 106 )
+        assert  version >= 106 
 
     @tmpdir(equinor="config/with_data/config")
     def test_create2(self):
         new_fs = EnkfFs.createFileSystem("newFS", EnKFFSType.BLOCK_FS_DRIVER_ID, mount = True)
-        self.assertTrue( isinstance( new_fs , EnkfFs ))
+        assert  isinstance( new_fs , EnkfFs )
 
     def test_throws(self):
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             fs = EnkfFs("/does/not/exist")
-
 

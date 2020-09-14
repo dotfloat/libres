@@ -26,16 +26,16 @@ class ErtRunContextTest(ResTest):
         run_id1 = run_context1.get_id( )
 
         run_arg0 = run_context1[0]
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             run_arg0.getQueueIndex()
 
-        self.assertEqual( run_arg0.iter_id, itr)
-        self.assertEqual( run_id1 , run_arg0.get_run_id( ))
+        assert run_arg0.iter_id == itr
+        assert run_id1 == run_arg0.get_run_id( )
 
         run_context2 = ErtRunContext( EnkfRunType.ENSEMBLE_EXPERIMENT , sim_fs , target_fs, mask , runpath_fmt, jobname_fmt, subst_list , itr )
         run_id2 = run_context2.get_id( )
 
-        self.assertFalse( run_id1 == run_id2 )
+        assert not  run_id1 == run_id2 
 
-        self.assertTrue( run_context1.is_active( 49 ))
-        self.assertFalse( run_context1.is_active( 50 ))
+        assert  run_context1.is_active( 49 )
+        assert not  run_context1.is_active( 50 )

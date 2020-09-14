@@ -29,7 +29,7 @@ class SummaryCollectorTest(ResTest):
 
             realization_20 = data.loc[20]
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 realization_60 = data.loc[60]
 
             data = SummaryCollector.loadAllSummaryData(ert, "default_0", ["WWCT:OP1", "WWCT:OP2"])
@@ -37,5 +37,5 @@ class SummaryCollectorTest(ResTest):
             self.assertFloatEqual(data["WWCT:OP1"][0]["2010-01-10"], 0.352953)
             self.assertFloatEqual(data["WWCT:OP2"][0]["2010-01-10"], 0.385549)
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 data["FOPR"]

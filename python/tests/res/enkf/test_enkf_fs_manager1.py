@@ -24,23 +24,22 @@ class EnKFFSManagerTest1(ResTest):
             fsm = ert.getEnkfFsManager()
 
             fs = fsm.getCurrentFileSystem()
-            self.assertTrue(fsm.isCaseMounted("default_0"))
-            self.assertTrue(fsm.caseExists("default_0"))
-            self.assertTrue(fsm.caseHasData("default_0"))
-            self.assertFalse(fsm.isCaseRunning("default_0"))
+            assert fsm.isCaseMounted("default_0")
+            assert fsm.caseExists("default_0")
+            assert fsm.caseHasData("default_0")
+            assert not fsm.isCaseRunning("default_0")
 
-            self.assertEqual(1, fsm.getFileSystemCount())
+            assert 1 == fsm.getFileSystemCount()
 
-            self.assertFalse(fsm.isCaseMounted("newFS"))
-            self.assertFalse(fsm.caseExists("newFS"))
-            self.assertFalse(fsm.caseHasData("newFS"))
-            self.assertFalse(fsm.isCaseRunning("newFS"))
+            assert not fsm.isCaseMounted("newFS")
+            assert not fsm.caseExists("newFS")
+            assert not fsm.caseHasData("newFS")
+            assert not fsm.isCaseRunning("newFS")
 
             fs2 = fsm.getFileSystem("newFS")
-            self.assertEqual(2, fsm.getFileSystemCount())
+            assert 2 == fsm.getFileSystemCount()
 
-            self.assertTrue(fsm.isCaseMounted("newFS"))
-            self.assertTrue(fsm.caseExists("newFS"))
-            self.assertFalse(fsm.caseHasData("newFS"))
-            self.assertFalse(fsm.isCaseRunning("newFS"))
-
+            assert fsm.isCaseMounted("newFS")
+            assert fsm.caseExists("newFS")
+            assert not fsm.caseHasData("newFS")
+            assert not fsm.isCaseRunning("newFS")

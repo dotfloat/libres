@@ -200,36 +200,36 @@ def test_parse_dotdot_relative(tmpdir):
         os.chdir("tmp")
         content = conf.parse("../config")
         d = content.as_dict()
-        self.assertTrue(content.isValid())
-        self.assertTrue("KEY" in content)
-        self.assertFalse("NOKEY" in content)
-        self.assertEqual( cwd0, content.get_config_path( ))
+        assert content.isValid()
+        assert "KEY" in content
+        assert not "NOKEY" in content
+        assert cwd0 == content.get_config_path( )
 
 
         keys = content.keys()
-        self.assertEqual(len(keys), 1)
-        self.assertIn("KEY", keys)
+        assert len(keys) == 1
+        assert "KEY" in keys
         d = content.as_dict()
-        self.assertIn("KEY", d)
+        assert "KEY" in d
         item_list = d["KEY"]
-        self.assertEqual(len(item_list), 1)
+        assert len(item_list) == 1
         l = item_list[0]
-        self.assertEqual(l[0], "VALUE1")
-        self.assertEqual(l[1], "VALUE2")
-        self.assertEqual(l[2], 100)
-        self.assertEqual(l[3], True)
-        self.assertEqual(l[4], 3.14)
-        self.assertEqual(l[5], "../path/file.txt")
+        assert l[0] == "VALUE1"
+        assert l[1] == "VALUE2"
+        assert l[2] == 100
+        assert l[3] == True
+        assert l[4] == 3.14
+        assert l[5] == "../path/file.txt"
 
-        self.assertFalse("NOT_IN_CONTENT" in content)
+        assert not "NOT_IN_CONTENT" in content
         item = content["NOT_IN_CONTENT"]
-        self.assertEqual(len(item), 0)
+        assert len(item) == 0
 
         with pytest.raises(KeyError):
             content["Nokey"]
 
         item = content["KEY"]
-        self.assertEqual(len(item), 1)
+        assert len(item) == 1
 
 
         line = item[0]
@@ -241,54 +241,54 @@ def test_parse_dotdot_relative(tmpdir):
 
 
         rel_path = line.getPath(index=5, absolute=False)
-        self.assertEqual(rel_path, "../path/file.txt")
+        assert rel_path == "../path/file.txt"
         get = line[5]
-        self.assertEqual(get, "../path/file.txt")
+        assert get == "../path/file.txt"
         abs_path = line.getPath(index=5)
-        self.assertEqual(abs_path, os.path.join(cwd0, "path/file.txt"))
+        assert abs_path == os.path.join(cwd0, "path/file.txt")
 
         rel_path = line.getPath(index=5, absolute=False, relative_start="../")
-        self.assertEqual(rel_path, "path/file.txt")
+        assert rel_path == "path/file.txt"
 
 
         with pytest.raises(IndexError):
             item[10]
 
         node = item[0]
-        self.assertEqual(len(node), 6)
+        assert len(node) == 6
         with pytest.raises(IndexError):
             node[6]
 
-        self.assertEqual(node[0], "VALUE1")
-        self.assertEqual(node[1], "VALUE2")
-        self.assertEqual(node[2], 100)
-        self.assertEqual(node[3], True)
-        self.assertEqual(node[4], 3.14)
+        assert node[0] == "VALUE1"
+        assert node[1] == "VALUE2"
+        assert node[2] == 100
+        assert node[3] == True
+        assert node[4] == 3.14
 
-        self.assertEqual(content.getValue("KEY", 0, 1), "VALUE2")
-        self.assertEqual(_iget(content, "KEY", 0, 1), "VALUE2")
+        assert content.getValue("KEY", 0, 1) == "VALUE2"
+        assert _iget(content, "KEY", 0, 1) == "VALUE2"
 
-        self.assertEqual(content.getValue("KEY", 0, 2), 100)
-        self.assertEqual(_iget_as_int(content, "KEY", 0, 2), 100)
+        assert content.getValue("KEY", 0, 2) == 100
+        assert _iget_as_int(content, "KEY", 0, 2) == 100
 
-        self.assertEqual(content.getValue("KEY", 0, 3), True)
-        self.assertEqual(_iget_as_bool(content, "KEY", 0, 3), True)
+        assert content.getValue("KEY", 0, 3) == True
+        assert _iget_as_bool(content, "KEY", 0, 3) == True
 
-        self.assertEqual(content.getValue("KEY", 0, 4), 3.14)
-        self.assertEqual(_iget_as_double(content, "KEY", 0, 4), 3.14)
+        assert content.getValue("KEY", 0, 4) == 3.14
+        assert _iget_as_double(content, "KEY", 0, 4) == 3.14
 
-        self.assertIsNone(_safe_iget(content, "KEY2", 0, 0))
+        assert _safe_iget(content, "KEY2", 0, 0) is None
 
-        self.assertEqual( _get_occurences(content, "KEY2"), 0)
-        self.assertEqual( _get_occurences(content, "KEY"), 1)
-        self.assertEqual( _get_occurences(content, "MISSING-KEY"), 0)
+        assert _get_occurences(content, "KEY2") == 0
+        assert _get_occurences(content, "KEY") == 1
+        assert _get_occurences(content, "MISSING-KEY") == 0
 
     def test_schema(self):
         schema_item = SchemaItem("TestItem")
         assert isinstance(schema_item, SchemaItem)
-        self.assertEqual(schema_item.iget_type(6), ContentTypeEnum.CONFIG_STRING)
+        assert schema_item.iget_type(6) == ContentTypeEnum.CONFIG_STRING
         schema_item.iset_type(0, ContentTypeEnum.CONFIG_INT)
-        self.assertEqual(schema_item.iget_type(0), ContentTypeEnum.CONFIG_INT)
+        assert schema_item.iget_type(0) == ContentTypeEnum.CONFIG_INT
         schema_item.set_argc_minmax(3, 6)
 
         del schema_item
@@ -300,14 +300,14 @@ def test_parse_dotdot_relative(tmpdir):
         with pytest.raises(TypeError):
             cs.addSetting("SETTING1", ContentTypeEnum.CONFIG_INT, 100.67)
 
-        self.assertFalse("SETTING1" in cs)
+        assert not "SETTING1" in cs
         cs.addSetting("SETTING2", ContentTypeEnum.CONFIG_INT, 100)
-        self.assertTrue("SETTING2" in cs)
+        assert "SETTING2" in cs
 
         with pytest.raises(KeyError):
             value = cs["NO_SUCH_KEY"]
 
-        self.assertEqual(cs["SETTING2"], 100)
+        assert cs["SETTING2"] == 100
 
         with pytest.raises(KeyError):
             cs["NO_SUCH_KEY"] = 100
@@ -329,19 +329,19 @@ def test_parse_dotdot_relative(tmpdir):
 
         cs.apply(content)
 
-        self.assertEqual(cs["A"], 100)
-        self.assertEqual(cs["B"], 200)
-        self.assertEqual(cs["C"], 300)
+        assert cs["A"] == 100
+        assert cs["B"] == 200
+        assert cs["C"] == 300
 
         keys = cs.keys()
-        self.assertTrue("A" in keys)
-        self.assertTrue("B" in keys)
-        self.assertTrue("C" in keys)
-        self.assertEqual(len(keys), 3)
+        assert "A" in keys
+        assert "B" in keys
+        assert "C" in keys
+        assert len(keys) == 3
 
         cs = ConfigSettings("SETTINGS")
         cs.addDoubleSetting("A", 1.0)
-        self.assertEqual(ContentTypeEnum.CONFIG_FLOAT, cs.getType("A"))
+        assert ContentTypeEnum.CONFIG_FLOAT == cs.getType("A")
 
         cs = ConfigSettings("SETTINGS")
         cs.addDoubleSetting("A", 1.0)
@@ -359,10 +359,10 @@ def test_parse_dotdot_relative(tmpdir):
         content = parser.parse("config")
 
         cs.apply(content)
-        self.assertEqual(cs["A"], 100.1)
-        self.assertEqual(cs["B"], 200)
-        self.assertEqual(cs["C"], "300")
-        self.assertEqual(cs["D"], False)
+        assert cs["A"] == 100.1
+        assert cs["B"] == 200
+        assert cs["C"] == "300"
+        assert cs["D"] == False
 
         with pytest.raises(Exception):
             cs["A"] = "Hei"
@@ -378,22 +378,22 @@ def test_parse_dotdot_relative(tmpdir):
 
         content = parser.parse("config", unrecognized=UnrecognizedEnum.CONFIG_UNRECOGNIZED_ADD)
 
-        self.assertIn("SETTINGS", content)
+        assert "SETTINGS" in content
         item = content["SETTINGS"]
-        self.assertEqual(len(item), 4)
+        assert len(item) == 4
 
         nodeA = item[0]
-        self.assertEqual(nodeA[0], "A")
-        self.assertEqual(nodeA[1], "100.1")
-        self.assertEqual(len(nodeA), 2)
+        assert nodeA[0] == "A"
+        assert nodeA[1] == "100.1"
+        assert len(nodeA) == 2
 
         nodeB = item[1]
-        self.assertEqual(nodeB[0], "B")
-        self.assertEqual(nodeB[1], "200")
-        self.assertEqual(nodeB[3], "STRING2")
-        self.assertEqual(len(nodeB), 4)
+        assert nodeB[0] == "B"
+        assert nodeB[1] == "200"
+        assert nodeB[3] == "STRING2"
+        assert len(nodeB) == 4
 
-        self.assertEqual(len(content), 4)
+        assert len(content) == 4
 
 
 def test_valid_string_runtime_file(tmpdir):

@@ -38,7 +38,7 @@ class RMSRunTest(ResTest):
 
     def test_create(self):
         self.monkeypatch.setenv("RMS_SITE_CONFIG", os.path.join(self.SOURCE_ROOT, "python/res/fm/rms/rms_config.yml"))
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             r = RMSRun(0, "/project/does/not/exist", "workflow")
 
         with TestAreaContext("test_create"):
@@ -72,7 +72,7 @@ class RMSRunTest(ResTest):
                 f.write( json.dumps(action) )
 
             r = RMSRun(0, "project", "workflow", run_path="run_path")
-            with self.assertRaises(Exception):
+            with pytest.raises(Exception):
                 r.run()
 
             # -----------------------------------------------------------------
@@ -82,7 +82,7 @@ class RMSRunTest(ResTest):
                 f.write( json.dumps(action) )
 
             r = RMSRun(0, "project", "workflow", run_path="run_path", target_file="some_file")
-            with self.assertRaises(Exception):
+            with pytest.raises(Exception):
                 r.run()
 
             # -----------------------------------------------------------------
@@ -121,7 +121,7 @@ class RMSRunTest(ResTest):
             with open("run_path/action.json", "w") as f:
                 f.write( json.dumps(action) )
 
-            with self.assertRaises(Exception):
+            with pytest.raises(Exception):
                 res.fm.rms.run(0, "project", "workflow", run_path="run_path")
 
             # -----------------------------------------------------------------
@@ -130,7 +130,7 @@ class RMSRunTest(ResTest):
             with open("run_path/action.json", "w") as f:
                 f.write( json.dumps(action) )
 
-            with self.assertRaises(Exception):
+            with pytest.raises(Exception):
                 res.fm.rms.run(0, "project", "workflow", run_path="run_path", target_file="some_file")
 
             # -----------------------------------------------------------------
@@ -192,9 +192,9 @@ class RMSRunTest(ResTest):
                     env = json.load(f)
 
                 if carry_over:
-                    self.assertIn('RMS_TEST_VAR', env)
+                    assert 'RMS_TEST_VAR' in env
                 else:
-                    self.assertNotIn('RMS_TEST_VAR', env)
+                    assert 'RMS_TEST_VAR' not in env
 
     def test_rms_drop_env(self):
         test_bed = [
@@ -247,9 +247,9 @@ class RMSRunTest(ResTest):
                     env = json.load(f)
 
                 if carry_over:
-                    self.assertIn('RMS_TEST_VAR', env)
+                    assert 'RMS_TEST_VAR' in env
                 else:
-                    self.assertNotIn('RMS_TEST_VAR', env)
+                    assert 'RMS_TEST_VAR' not in env
 
 
     def test_run_class_with_existing_target_file(self):

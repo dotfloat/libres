@@ -332,15 +332,15 @@ class ProgrammaticResConfigTest(ResTest):
         self.assertEqual(loaded_res_config.model_config.getEnspath(),
                          prog_res_config.model_config.getEnspath())
 
-        self.assertEqual(0, len(prog_res_config.errors))
-        self.assertEqual(0, len(prog_res_config.failed_keys))
+        assert 0 == len(prog_res_config.errors)
+        assert 0 == len(prog_res_config.failed_keys)
 
 
     @tmpdir(local="simple_config")
     def test_no_config_directory(self):
         config_file = "simple_config/minimum_config"
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             ResConfig(config=self.minimum_config_cwd)
 
 
@@ -348,14 +348,14 @@ class ProgrammaticResConfigTest(ResTest):
     def test_errors(self):
         config_file = "simple_config/minimum_config"
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             res_config = ResConfig(config=self.minimum_config_error)
 
         res_config = ResConfig(config=self.minimum_config_error,
                                throw_on_error=False)
 
-        self.assertTrue(len(res_config.errors) > 0)
-        self.assertEqual(0, len(res_config.failed_keys))
+        assert len(res_config.errors) > 0
+        assert 0 == len(res_config.failed_keys)
 
     @tmpdir(local="simple_config")
     def test_failed_keys(self):
@@ -363,8 +363,8 @@ class ProgrammaticResConfigTest(ResTest):
 
         res_config = ResConfig(config=self.minimum_config_extra_key)
 
-        self.assertTrue(len(res_config.failed_keys) == 1)
-        self.assertEqual(["UNKNOWN_KEY"], list(res_config.failed_keys.keys()))
+        assert len(res_config.failed_keys) == 1
+        assert ["UNKNOWN_KEY"] == list(res_config.failed_keys.keys())
         self.assertEqual(self.minimum_config_extra_key["UNKNOWN_KEY"],
                         res_config.failed_keys["UNKNOWN_KEY"])
 
@@ -393,7 +393,7 @@ class ProgrammaticResConfigTest(ResTest):
 
 
     def assert_equal_site_config(self, loaded_site_config, prog_site_config):
-        self.assertEqual(loaded_site_config, prog_site_config)
+        assert loaded_site_config == prog_site_config
 
 
     def assert_equal_ecl_config(self, loaded_ecl_config, prog_ecl_config):
@@ -408,7 +408,7 @@ class ProgrammaticResConfigTest(ResTest):
                          prog_config.get_max_runtime())
 
     def assert_equal_hook_manager(self, loaded_hook_manager, prog_hook_manager):
-        self.assertEqual(loaded_hook_manager, prog_hook_manager)
+        assert loaded_hook_manager == prog_hook_manager
 
     def assert_equal_log_config(self, loaded_log_config, prog_log_config):
         self.assertEqual(loaded_log_config.log_file,
@@ -431,12 +431,12 @@ class ProgrammaticResConfigTest(ResTest):
             let = loaded_templates.get_template(template_name)
             pet = prog_templates.get_template(template_name)
 
-            self.assertEqual(let.get_template_file(), pet.get_template_file())
-            self.assertEqual(let.get_target_file(), pet.get_target_file())
+            assert let.get_template_file() == pet.get_template_file()
+            assert let.get_target_file() == pet.get_target_file()
 
 
     def assert_equal_ert_workflow(self, loaded_workflow_list, prog_workflow_list):
-        self.assertEqual(loaded_workflow_list, prog_workflow_list)
+        assert loaded_workflow_list == prog_workflow_list
 
 
     def assert_equal_simulation_config(self, loaded_simulation_config, prog_simulation_config):
@@ -452,8 +452,8 @@ class ProgrammaticResConfigTest(ResTest):
         forward_model = prog_res_config.model_config.getForwardModel()
         job_A = forward_model.iget_job(0)
         job_B = forward_model.iget_job(1)
-        self.assertEqual( job_A.get_arglist(), ["Hello", "True", "3.14", "4"])
-        self.assertEqual( job_B.get_arglist(), ["word"])
+        assert job_A.get_arglist() == ["Hello", "True", "3.14", "4"]
+        assert job_B.get_arglist() == ["word"]
 
     @tmpdir(local="snake_oil_structure")
     def test_large_config(self):
@@ -489,9 +489,9 @@ class ProgrammaticResConfigTest(ResTest):
         self.assert_equal_ert_workflow(loaded_res_config.ert_workflow_list,
                                        prog_res_config.ert_workflow_list)
 
-        self.assertEqual(loaded_res_config.queue_config, prog_res_config.queue_config)
+        assert loaded_res_config.queue_config == prog_res_config.queue_config
 
-        self.assertEqual(0, len(prog_res_config.failed_keys))
+        assert 0 == len(prog_res_config.failed_keys)
 
     @tmpdir(local="simple_config")
     def test_test_context(self):
@@ -499,14 +499,14 @@ class ProgrammaticResConfigTest(ResTest):
         # minimum_config dictionary are found are located correctly by
         # creating a working area, and then we create testcontext from
         # there.
-        self.assertTrue(os.path.isfile( "simple_config/script.sh"))
+        assert os.path.isfile( "simple_config/script.sh")
 
         with ErtTestContext( "dict_test", config_dict = self.minimum_config, store_area = True):
             pass
 
         os.chdir( "simple_config")
         # The directory referenced in INTERNALS.CONFIG_DIRECTORY does not exist => IOError
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             with ErtTestContext( "dict_test", config_dict = self.minimum_config, store_area = True):
                 pass
 

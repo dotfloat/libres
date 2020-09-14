@@ -54,23 +54,23 @@ class TemplatingTest(ResTest):
             wells_out = 'wells.out'
 
             #undefined template elements
-            with self.assertRaises(jinja2.exceptions.UndefinedError):
+            with pytest.raises(jinja2.exceptions.UndefinedError):
                 render_template(None, 'template_file', wells_out)
 
             #file not found
-            with self.assertRaises(ValueError):
+            with pytest.raises(ValueError):
                 render_template(2*prod_in, 'template_file', wells_out)
 
             #no template file
-            with self.assertRaises(TypeError):
+            with pytest.raises(TypeError):
                 render_template(prod_in, None, wells_out)
 
             #templatefile not found
-            with self.assertRaises(ValueError):
+            with pytest.raises(ValueError):
                 render_template(prod_in, 'template_file'+'nogo', wells_out)
 
             #no output file
-            with self.assertRaises(TypeError):
+            with pytest.raises(TypeError):
                 render_template(prod_in, 'template_file', None)
 
     @tmpdir()
@@ -104,7 +104,7 @@ class TemplatingTest(ResTest):
         with open(wells_out) as fin:
             output = fin.readlines()
 
-        self.assertEqual(expected_template_out, output)
+        assert expected_template_out == output
 
     @tmpdir()
     def test_template_multiple_input(self):
@@ -137,7 +137,7 @@ class TemplatingTest(ResTest):
                               "OTH 1400\n"+ \
                               "OTH_TEST 3000.22"
 
-            self.assertEqual(parameter_file.read(), expected_output)
+            assert parameter_file.read() == expected_output
 
     @tmpdir()
     def test_template_executable(self):
@@ -167,7 +167,7 @@ class TemplatingTest(ResTest):
                 expected_output = "FILENAME\n"+ \
                                   "F1 1999.22\n"+ \
                                   "F2 200"
-                self.assertEqual(parameter_file.read(), expected_output)
+                assert parameter_file.read() == expected_output
 
     @tmpdir()
     def test_load_parameters(self):
@@ -178,4 +178,4 @@ class TemplatingTest(ResTest):
 
             input_parameters = load_parameters()
 
-            self.assertEqual(input_parameters, self.default_parameters)
+            assert input_parameters == self.default_parameters

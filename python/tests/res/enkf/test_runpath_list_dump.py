@@ -62,10 +62,10 @@ class RunpathListDumpTest(ResTest):
                 if not mask[i]:
                     continue
 
-                self.assertTrue(os.path.isdir("simulations/%d" % run_arg.geo_id))
+                assert os.path.isdir("simulations/%d" % run_arg.geo_id)
 
             runpath_list_path = ".ert_runpath_list"
-            self.assertTrue(os.path.isfile(runpath_list_path))
+            assert os.path.isfile(runpath_list_path)
 
             exp_runpaths = [
                 render_dynamic_values(runpath_fmt, itr, iens, run_arg.geo_id) % (iens, itr)
@@ -76,7 +76,7 @@ class RunpathListDumpTest(ResTest):
             with open(runpath_list_path, 'r') as f:
                 dumped_runpaths = list(zip(*[line.split() for line in f.readlines()]))[1]
 
-            self.assertEqual(list(exp_runpaths), list(dumped_runpaths))
+            assert list(exp_runpaths) == list(dumped_runpaths)
 
 
     @tmpdir()

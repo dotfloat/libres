@@ -12,25 +12,25 @@ class WorkflowTest(ResTest):
             WorkflowCommon.createExternalDumpJob()
 
             joblist = WorkflowJoblist()
-            self.assertTrue(joblist.addJobFromFile("DUMP", "dump_job"))
+            assert joblist.addJobFromFile("DUMP", "dump_job")
 
-            with self.assertRaises(UserWarning):
+            with pytest.raises(UserWarning):
                 joblist.addJobFromFile("KNOCK", "knock_job")
 
-            self.assertTrue("DUMP" in joblist)
+            assert "DUMP" in joblist
 
 
             workflow = Workflow("dump_workflow", joblist)
 
-            self.assertEqual(len(workflow), 2)
+            assert len(workflow) == 2
 
             job, args = workflow[0]
-            self.assertEqual(job, joblist["DUMP"])
-            self.assertEqual(args[0], "dump1")
-            self.assertEqual(args[1], "dump_text_1")
+            assert job == joblist["DUMP"]
+            assert args[0] == "dump1"
+            assert args[1] == "dump_text_1"
 
             job, args = workflow[1]
-            self.assertEqual(job, joblist["DUMP"])
+            assert job == joblist["DUMP"]
 
 
     def test_workflow_run(self):
@@ -38,23 +38,23 @@ class WorkflowTest(ResTest):
             WorkflowCommon.createExternalDumpJob()
 
             joblist = WorkflowJoblist()
-            self.assertTrue(joblist.addJobFromFile("DUMP", "dump_job"))
-            self.assertTrue("DUMP" in joblist)
+            assert joblist.addJobFromFile("DUMP", "dump_job")
+            assert "DUMP" in joblist
 
             workflow = Workflow("dump_workflow", joblist)
 
-            self.assertTrue(len(workflow), 2)
+            assert len(workflow), 2
 
             context = SubstitutionList()
             context.addItem("<PARAM>", "text")
 
-            self.assertTrue(workflow.run(None, verbose=True, context=context))
+            assert workflow.run(None, verbose=True, context=context)
 
             with open("dump1", "r") as f:
-                self.assertEqual(f.read(), "dump_text_1")
+                assert f.read() == "dump_text_1"
 
             with open("dump2", "r") as f:
-                self.assertEqual(f.read(), "dump_text_2")
+                assert f.read() == "dump_text_2"
 
 
     def test_failing_workflow_run(self):
@@ -62,10 +62,10 @@ class WorkflowTest(ResTest):
             WorkflowCommon.createExternalDumpJob()
 
             joblist = WorkflowJoblist()
-            self.assertTrue(joblist.addJobFromFile("DUMP", "dump_job"))
-            self.assertTrue("DUMP" in joblist)
+            assert joblist.addJobFromFile("DUMP", "dump_job")
+            assert "DUMP" in joblist
 
             workflow = Workflow("undefined", joblist)
             context = SubstitutionList()
 
-            self.assertFalse(workflow.run(None, verbose=True, context=context))
+            assert not workflow.run(None, verbose=True, context=context)

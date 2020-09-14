@@ -88,9 +88,9 @@ class EnKFTestTransferEnv(ResTest):
             with open("jobs.json", "r") as f:
                 data = json.load(f)
                 env_data = data["global_environment"]
-                self.assertEqual("TheFirstValue", env_data["FIRST"])
-                self.assertEqual("TheSecondValue", env_data["SECOND"])
+                assert "TheFirstValue" == env_data["FIRST"]
+                assert "TheSecondValue" == env_data["SECOND"]
 
                 path_data = data["global_update_path"]
-                self.assertEqual("TheThirdValue", path_data["THIRD"])
-                self.assertEqual("TheFourthValue", path_data["FOURTH"])
+                assert "TheThirdValue" == path_data["THIRD"]
+                assert "TheFourthValue" == path_data["FOURTH"]

@@ -31,14 +31,14 @@ class CustomKWConfigSetTest(ResTest):
         config_set = CustomKWConfigSet()
 
         config = self.createCustomKWConfig("TEST", {"VALUE_1": 0.5, "VALUE_2": 5, "VALUE_3": "string", "VALUE_4": "true"})
-        self.assertItemsEqual(config.getKeys(), ["VALUE_1", "VALUE_2", "VALUE_3", "VALUE_4"])
+        assert set(config.getKeys()) == set(["VALUE_1", "VALUE_2", "VALUE_3", "VALUE_4"])
 
         config_set.addConfig(config)
         keys = config_set.getStoredConfigKeys()
-        self.assertItemsEqual(keys, ["TEST"])
+        assert set(keys) == set(["TEST"])
 
         config_set.reset()
-        self.assertTrue(len(config_set.getStoredConfigKeys()) == 0)
+        assert len(config_set.getStoredConfigKeys()) == 0
 
 
     @tmpdir()
@@ -50,27 +50,27 @@ class CustomKWConfigSetTest(ResTest):
         config_set.addConfig(trees_config)
         config_set.addConfig(insects_config)
 
-        self.assertItemsEqual(config_set.getStoredConfigKeys(), ["TREES", "INSECTS"])
+        assert set(config_set.getStoredConfigKeys()) == set(["TREES", "INSECTS"])
 
         config_set.fwrite("config_set")
 
-        self.assertTrue(os.path.exists("config_set"))
+        assert os.path.exists("config_set")
 
         config_set = CustomKWConfigSet("config_set")
 
-        self.assertItemsEqual(config_set.getStoredConfigKeys(), ["TREES", "INSECTS"])
+        assert set(config_set.getStoredConfigKeys()) == set(["TREES", "INSECTS"])
 
         trees_config_from_file = CustomKWConfig("TREES", None)
         config_set.updateConfig(trees_config_from_file)
 
         for key in ["OAK", "SPRUCE", "FIR", "PALM"]:
-            self.assertEqual(trees_config_from_file.indexOfKey(key), trees_config.indexOfKey(key))
-            self.assertTrue(trees_config_from_file.keyIsDouble(key) == trees_config.keyIsDouble(key))
+            assert trees_config_from_file.indexOfKey(key) == trees_config.indexOfKey(key)
+            assert trees_config_from_file.keyIsDouble(key) == trees_config.keyIsDouble(key)
 
 
         insects_config_from_file = CustomKWConfig("INSECTS", None)
         config_set.updateConfig(insects_config_from_file)
 
         for key in ["MOSQUITO", "FLY", "BEETLE"]:
-            self.assertEqual(insects_config_from_file.indexOfKey(key), insects_config.indexOfKey(key))
-            self.assertTrue(insects_config_from_file.keyIsDouble(key) == insects_config.keyIsDouble(key))
+            assert insects_config_from_file.indexOfKey(key) == insects_config.indexOfKey(key)
+            assert insects_config_from_file.keyIsDouble(key) == insects_config.keyIsDouble(key)

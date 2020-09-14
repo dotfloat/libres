@@ -29,27 +29,27 @@ class BlockObsTest(ResTest):
         field_config = FieldConfig("PRESSURE" , grid)    
         block_obs = BlockObservation("P-CONFIG" , field_config , grid)
 
-        self.assertEqual(  len(block_obs) , 0 )
+        assert len(block_obs) == 0
 
         block_obs.addPoint(1,2,3,100,25)
-        self.assertEqual(  len(block_obs) , 1 )
-        self.assertEqual( block_obs.getValue(0) , 100 )
-        self.assertEqual( block_obs.getStd(0) , 25 )
-        self.assertEqual( block_obs.getStdScaling(0) , 1 )
+        assert len(block_obs) == 1
+        assert block_obs.getValue(0) == 100
+        assert block_obs.getStd(0) == 25
+        assert block_obs.getStdScaling(0) == 1
 
         block_obs.addPoint(1,2,4,200,50)
-        self.assertEqual(  len(block_obs) , 2 )
-        self.assertEqual( block_obs.getValue(1) , 200 )
-        self.assertEqual( block_obs.getStd(1) , 50 )
-        self.assertEqual( block_obs.getStdScaling(1) , 1 )
+        assert len(block_obs) == 2
+        assert block_obs.getValue(1) == 200
+        assert block_obs.getStd(1) == 50
+        assert block_obs.getStdScaling(1) == 1
 
         active_list = ActiveList( )
         block_obs.updateStdScaling( 0.50 , active_list )
-        self.assertEqual( block_obs.getStdScaling(0) , 0.50 )
-        self.assertEqual( block_obs.getStdScaling(1) , 0.50 )
+        assert block_obs.getStdScaling(0) == 0.50
+        assert block_obs.getStdScaling(1) == 0.50
 
         active_list.addActiveIndex( 1 )
         block_obs.updateStdScaling( 2.00 , active_list )
-        self.assertEqual( block_obs.getStdScaling(0) , 0.50 )
-        self.assertEqual( block_obs.getStdScaling(1) , 2.00 )
+        assert block_obs.getStdScaling(0) == 0.50
+        assert block_obs.getStdScaling(1) == 2.00
         

@@ -33,7 +33,7 @@ class TestFMValidity(ResTest):
                         #extract executable (if any)
                         executable_script = self._extract_executable(fn)
                         if executable_script is not None:
-                            self.assertTrue(self._file_exist_and_is_executable(os.path.join(fm_dir, executable_script)))
+                            assert self._file_exist_and_is_executable(os.path.join(fm_dir, executable_script))
 
 
 if __name__ == "__main__":

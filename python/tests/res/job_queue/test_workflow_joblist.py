@@ -14,12 +14,12 @@ class WorkflowJoblistTest(ResTest):
 
         joblist.addJob(job)
 
-        self.assertTrue(job in joblist)
-        self.assertTrue("JOB1" in joblist)
+        assert job in joblist
+        assert "JOB1" in joblist
 
         job_ref = joblist["JOB1"]
 
-        self.assertEqual(job.name(), job_ref.name())
+        assert job.name() == job_ref.name()
 
 
 
@@ -35,10 +35,10 @@ class WorkflowJoblistTest(ResTest):
             joblist.addJobFromFile("SELECT_CASE_JOB", "select_case_job")
             joblist.addJobFromFile("SUBTRACT_SCRIPT_JOB", "subtract_script_job")
 
-            self.assertTrue("DUMP_JOB" in joblist)
-            self.assertTrue("SELECT_CASE_JOB" in joblist)
-            self.assertTrue("SUBTRACT_SCRIPT_JOB" in joblist)
+            assert "DUMP_JOB" in joblist
+            assert "SELECT_CASE_JOB" in joblist
+            assert "SUBTRACT_SCRIPT_JOB" in joblist
 
-            self.assertFalse((joblist["DUMP_JOB"]).isInternal())
-            self.assertTrue((joblist["SELECT_CASE_JOB"]).isInternal())
-            self.assertTrue((joblist["SUBTRACT_SCRIPT_JOB"]).isInternal())
+            assert not (joblist["DUMP_JOB"]).isInternal()
+            assert (joblist["SELECT_CASE_JOB"]).isInternal()
+            assert (joblist["SUBTRACT_SCRIPT_JOB"]).isInternal()

@@ -16,7 +16,7 @@ class CustomKwCollectorTest(ResTest):
 
             data = CustomKWCollector.loadAllCustomKWData(ert, "test_run")
 
-            self.assertTrue(len(data.columns) == 0)
+            assert len(data.columns) == 0
 
     @tmpdir()
     def test_custom_kw_collector_current_fs(self):
@@ -40,6 +40,6 @@ class CustomKwCollectorTest(ResTest):
             self.assertFloatEqual(data["AGGREGATED:PERLIN_3"][8], -0.917785)
             self.assertFloatEqual(data["AGGREGATED:PERLIN_3"][9], 0.220371)
 
-            self.assertEqual(data["AGGREGATED:STATE"][0], "Positive")
-            self.assertEqual(data["AGGREGATED:STATE"][8], "Negative")
-            self.assertEqual(data["AGGREGATED:STATE"][9], "Positive")
+            assert data["AGGREGATED:STATE"][0] == "Positive"
+            assert data["AGGREGATED:STATE"][8] == "Negative"
+            assert data["AGGREGATED:STATE"][9] == "Positive"

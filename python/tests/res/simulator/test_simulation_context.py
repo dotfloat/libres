@@ -39,39 +39,39 @@ class SimulationContextTest(ResTest):
 
             for iens in range(size):
                 if iens % 2 == 0:
-                    self.assertFalse(simulation_context1.isRealizationFinished(iens))
+                    assert not simulation_context1.isRealizationFinished(iens)
                     # do we have the proper geo_id in run_args?
-                    self.assertEqual(simulation_context1.get_run_args(iens).geo_id, iens)
+                    assert simulation_context1.get_run_args(iens).geo_id == iens
                 else:
-                    self.assertFalse(simulation_context2.isRealizationFinished(iens))
-                    self.assertEqual(simulation_context2.get_run_args(iens).geo_id, iens)
+                    assert not simulation_context2.isRealizationFinished(iens)
+                    assert simulation_context2.get_run_args(iens).geo_id == iens
 
             wait_until(
                 func=(lambda: self.assertFalse(simulation_context1.isRunning() or simulation_context2.isRunning())),
                 timeout=60
             )
 
-            self.assertEqual(simulation_context1.getNumFailed(), 0)
-            self.assertEqual(simulation_context1.getNumRunning(), 0)
-            self.assertEqual(simulation_context1.getNumSuccess(), size/2)
+            assert simulation_context1.getNumFailed() == 0
+            assert simulation_context1.getNumRunning() == 0
+            assert simulation_context1.getNumSuccess() == size/2
 
-            self.assertEqual(simulation_context2.getNumFailed(), 0)
-            self.assertEqual(simulation_context2.getNumRunning(), 0)
-            self.assertEqual(simulation_context2.getNumSuccess(), size/2)
+            assert simulation_context2.getNumFailed() == 0
+            assert simulation_context2.getNumRunning() == 0
+            assert simulation_context2.getNumSuccess() == size/2
 
             first_half_state_map = first_half.getStateMap()
             other_half_state_map = other_half.getStateMap()
 
             for iens in range(size):
                 if iens % 2 == 0:
-                    self.assertTrue(simulation_context1.didRealizationSucceed(iens))
-                    self.assertFalse(simulation_context1.didRealizationFail(iens))
-                    self.assertTrue(simulation_context1.isRealizationFinished(iens))
+                    assert simulation_context1.didRealizationSucceed(iens)
+                    assert not simulation_context1.didRealizationFail(iens)
+                    assert simulation_context1.isRealizationFinished(iens)
 
-                    self.assertEqual(first_half_state_map[iens], RealizationStateEnum.STATE_HAS_DATA)
+                    assert first_half_state_map[iens] == RealizationStateEnum.STATE_HAS_DATA
                 else:
-                    self.assertTrue(simulation_context2.didRealizationSucceed(iens))
-                    self.assertFalse(simulation_context2.didRealizationFail(iens))
-                    self.assertTrue(simulation_context2.isRealizationFinished(iens))
+                    assert simulation_context2.didRealizationSucceed(iens)
+                    assert not simulation_context2.didRealizationFail(iens)
+                    assert simulation_context2.isRealizationFinished(iens)
 
-                    self.assertEqual(other_half_state_map[iens], RealizationStateEnum.STATE_HAS_DATA)
+                    assert other_half_state_map[iens] == RealizationStateEnum.STATE_HAS_DATA

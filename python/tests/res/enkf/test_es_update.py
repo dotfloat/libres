@@ -18,8 +18,8 @@ class ESUpdateTest(ResTest):
             ert = context.getErt()
             es_update = ESUpdate( ert )
 
-            self.assertFalse( es_update.hasModule( "NO_NOT_THIS_MODULE"  ))
-            with self.assertRaises(KeyError):
+            assert not  es_update.hasModule( "NO_NOT_THIS_MODULE"  )
+            with pytest.raises(KeyError):
                 m = es_update.getModule( "STD_ENKF_XXX" )
 
             module = es_update.getModule( "STD_ENKF" )
@@ -53,7 +53,7 @@ class ESUpdateTest(ResTest):
 
             # Test that an update has actually taken place
             for index in range(len(sim_gen_kw)):
-                self.assertNotEqual(sim_gen_kw[index], target_gen_kw[index])
+                assert sim_gen_kw[index] != target_gen_kw[index]
 
 
     @tmpdir()
@@ -107,12 +107,11 @@ class ESUpdateTest(ResTest):
 
             # Test that the localized values has been updated
             for i in localized_idxs:
-                self.assertNotEqual(sim_gen_kw[i], target_gen_kw[i])
+                assert sim_gen_kw[i] != target_gen_kw[i]
 
             # test that all the other values are left unchanged
             non_localized_idxs = (
                 x for x in range(len(sim_gen_kw)) if x not in localized_idxs)
             for i in non_localized_idxs:
-                self.assertEqual(sim_gen_kw[i], target_gen_kw[i])
-
+                assert sim_gen_kw[i] == target_gen_kw[i]
 

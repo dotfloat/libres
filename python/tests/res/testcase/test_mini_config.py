@@ -30,19 +30,18 @@ class MiniConfigTest(ResTest):
             fs = ert.getEnkfFsManager().getCurrentFileSystem()
 
             realizations_list = fs.realizationList(RealizationStateEnum.STATE_HAS_DATA)
-            self.assertTrue(0 in realizations_list)
-            self.assertTrue(8 in realizations_list)
-            self.assertTrue(9 in realizations_list)
+            assert 0 in realizations_list
+            assert 8 in realizations_list
+            assert 9 in realizations_list
 
             realizations_list = fs.realizationList(RealizationStateEnum.STATE_LOAD_FAILURE)
-            self.assertTrue(1 in realizations_list)
-            self.assertTrue(2 in realizations_list)
-            self.assertTrue(3 in realizations_list)
-            self.assertTrue(4 in realizations_list)
-            self.assertTrue(5 in realizations_list)
-            self.assertTrue(6 in realizations_list)
-            self.assertTrue(7 in realizations_list)
-
+            assert 1 in realizations_list
+            assert 2 in realizations_list
+            assert 3 in realizations_list
+            assert 4 in realizations_list
+            assert 5 in realizations_list
+            assert 6 in realizations_list
+            assert 7 in realizations_list
 
 
 

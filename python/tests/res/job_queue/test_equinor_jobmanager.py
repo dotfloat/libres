@@ -78,4 +78,3 @@ class JobManagerEquinorTest(ResTest):
             socket.inet_aton(ip)
         except Exception as err:
             self.assertTrue(False, msg='On input %s: %s.' % (ip, err))  # noqa
-

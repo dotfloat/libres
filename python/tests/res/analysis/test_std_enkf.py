@@ -28,15 +28,15 @@ class StdEnKFTest(ResTest):
         self.module = AnalysisModule(name = "STD_ENKF" )
 
     def toggleKey(self, key):
-        self.assertTrue( self.module.hasVar( key ))
+        assert  self.module.hasVar( key )
 
         # check it is true
-        self.assertTrue( self.module.setVar( key , True ) )
-        self.assertTrue( self.module.getBool(key) )
+        assert  self.module.setVar( key , True ) 
+        assert  self.module.getBool(key) 
 
         # set it to false
-        self.assertTrue( self.module.setVar( key , False ) )
-        self.assertFalse( self.module.getBool(key) )
+        assert  self.module.setVar( key , False ) 
+        assert not  self.module.getBool(key) 
 
     def test_EE_option(self):
         self.toggleKey( 'USE_EE' )

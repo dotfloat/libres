@@ -24,12 +24,16 @@ from res.enkf import ConfigKeys
 
 from tests.utils import tmpdir
 
+
+@pytest.fixture(scope="module")
+def case_file(tmpdir):
+
 class AnalysisConfigTest(ResTest):
     case_file = "simple_config/minimum_config"
 
     @tmpdir()
     def test_invalid_user_config(self):
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             AnalysisConfig("this/is/not/a/file")
 
     @tmpdir(local="simple_config")
@@ -37,20 +41,20 @@ class AnalysisConfigTest(ResTest):
         ac = AnalysisConfig(self.case_file)
 
         # Unless the MIN_REALIZATIONS is set in config, one is required to have "all" realizations.
-        self.assertFalse(ac.haveEnoughRealisations(5, 10))
-        self.assertTrue(ac.haveEnoughRealisations(10, 10))
+        assert not ac.haveEnoughRealisations(5, 10)
+        assert ac.haveEnoughRealisations(10, 10)
 
         ac.set_max_runtime( 50 )
-        self.assertEqual( 50 , ac.get_max_runtime() )
+        assert 50 == ac.get_max_runtime()
 
         ac.set_stop_long_running( True )
-        self.assertTrue( ac.get_stop_long_running() )
+        assert  ac.get_stop_long_running() 
 
     @tmpdir(local="simple_config")
     def test_analysis_modules(self):
         ac = AnalysisConfig(self.case_file)
-        self.assertIsNotNone( ac.activeModuleName() )
-        self.assertIsNotNone( ac.getModuleList() )
+        assert  ac.activeModuleName()  is not None
+        assert  ac.getModuleList()  is not None
 
     @tmpdir(local="simple_config")
     def test_analysis_config_global_std_scaling(self):
@@ -62,7 +66,7 @@ class AnalysisConfigTest(ResTest):
     @tmpdir(local="simple_config")
     def test_init(self):
         analysis_config = AnalysisConfig(self.case_file)
-        self.assertIsNotNone(analysis_config)
+        assert analysis_config is not None
 
     @tmpdir(local="simple_config")
     def test_analysis_config_constructor(self):
@@ -112,4 +116,4 @@ class AnalysisConfigTest(ResTest):
         _config_file = 'simple_config/analysis_config'
         analysis_config_file = AnalysisConfig(user_config_file=_config_file)
         analysis_config_dict = AnalysisConfig(config_dict=config_dict)
-        self.assertEqual(analysis_config_dict, analysis_config_file)
+        assert analysis_config_dict == analysis_config_file

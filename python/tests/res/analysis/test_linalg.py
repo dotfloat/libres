@@ -29,19 +29,18 @@ class LinalgTest(ResTest):
         S[1,1] = 1
         S[2,2] = 1
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             num_pc = Linalg.numPC( S , 0 )
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             num_pc = Linalg.numPC( S , 1.5 )
 
         num_pc = Linalg.numPC( S , 0.20 )
-        self.assertEqual( num_pc , 1 )
+        assert num_pc == 1
 
         num_pc = Linalg.numPC( S , 0.50 )
-        self.assertEqual( num_pc , 2 )
+        assert num_pc == 2
 
         num_pc = Linalg.numPC( S , 0.80 )
-        self.assertEqual( num_pc , 3 )
-
+        assert num_pc == 3
 

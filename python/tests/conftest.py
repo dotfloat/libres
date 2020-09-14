@@ -56,3 +56,8 @@ def env_save():
     environment_post = [(key, val) for key, val in os.environ.items() if key != "PYTEST_CURRENT_TEST"]
     if set(environment_pre) != set(environment_post):
         raise EnvironmentError("Your environment has changed after that test, please reset")
+
+
+@pytest.fixture
+def ert_data(tmpdir):
+    pass

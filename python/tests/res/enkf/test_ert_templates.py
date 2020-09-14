@@ -55,21 +55,21 @@ class ErtTemplatesTest(ResTest):
         assert set(template_names) == set(configured_target_files)
         for configured_template in self.config_data[ConfigKeys.RUN_TEMPLATE]:
             template = templates.get_template(configured_template[0])
-            self.assertEqual(template.get_template_file(), os.path.join(self.work_area.get_cwd(), configured_template[0]))
-            self.assertEqual(template.get_target_file(), configured_template[1])
+            assert template.get_template_file() == os.path.join(self.work_area.get_cwd(), configured_template[0])
+            assert template.get_target_file() == configured_template[1]
             expected_arg_string = ", ".join(["{}={}".format(key, val) for key, val in configured_template[2]])
-            self.assertEqual(expected_arg_string, template.get_args_as_string())
+            assert expected_arg_string == template.get_args_as_string()
 
     def test_old_and_new_logic_produces_equal_objects(self):
         templates = ErtTemplates(self.res_config.subst_config.subst_list, config_dict=self.config_data)
-        self.assertEqual(templates, self.res_config.ert_templates)
+        assert templates == self.res_config.ert_templates
 
     def test_unequal_objects_are_unequal(self):
         templates = ErtTemplates(self.res_config.subst_config.subst_list,
                                  config_dict=self.config_data)
         templates2 = ErtTemplates(self.res_config.subst_config.subst_list,
                                   config_dict=self.change_template_arg(1, 1, "XXX", "YYY"))
-        self.assertNotEqual(templates, templates2)
+        assert templates != templates2
 
     def remove_key(self, key):
         return {i: self.config_data[i] for i in self.config_data if i != key}

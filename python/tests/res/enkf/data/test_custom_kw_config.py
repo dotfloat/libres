@@ -22,31 +22,31 @@ class CustomKWConfigTest(ResTest):
 
         custom_kw_config = CustomKWConfig("CUSTOM_KW", "result_file", "output_file")
 
-        self.assertEqual(custom_kw_config.getName(), "CUSTOM_KW")
-        self.assertEqual(custom_kw_config.getResultFile(), "result_file")
-        self.assertEqual(custom_kw_config.getOutputFile(), "output_file")
+        assert custom_kw_config.getName() == "CUSTOM_KW"
+        assert custom_kw_config.getResultFile() == "result_file"
+        assert custom_kw_config.getOutputFile() == "output_file"
 
-        self.assertEqual(len(custom_kw_config), 0)
+        assert len(custom_kw_config) == 0
 
         result = StringList()
         success = custom_kw_config.parseResultFile("result_file", result)
-        self.assertTrue(success)
+        assert success
 
-        self.assertEqual(len(custom_kw_config), 4)
+        assert len(custom_kw_config) == 4
 
         for index, key in enumerate(data):
-            self.assertTrue(key in custom_kw_config)
+            assert key in custom_kw_config
 
             key_is_string = isinstance(data[key], str)
-            self.assertTrue(custom_kw_config.keyIsDouble(key) != key_is_string)
-            self.assertEqual(index, custom_kw_config.indexOfKey(key))
+            assert custom_kw_config.keyIsDouble(key) != key_is_string
+            assert index == custom_kw_config.indexOfKey(key)
 
-            self.assertEqual(result[index], str(data[key]))
+            assert result[index] == str(data[key])
 
-        self.assertTrue(len(custom_kw_config.getKeys()) == 4)
+        assert len(custom_kw_config.getKeys()) == 4
 
         for key in custom_kw_config:
-            self.assertTrue(key in data)
+            assert key in data
 
     @tmpdir()
     def test_custom_kw_config_multiple_identical_keys(self):
@@ -61,10 +61,10 @@ class CustomKWConfigTest(ResTest):
 
             result = StringList()
             success = custom_kw_config.parseResultFile("result_file", result)
-            self.assertTrue(success)
+            assert success
 
             index_of_value_4 = custom_kw_config.indexOfKey("VALUE_4")
-            self.assertEqual(result[index_of_value_4], "repeat_of_value_4")
+            assert result[index_of_value_4] == "repeat_of_value_4"
 
     @tmpdir()
     def test_custom_kw_config_define_and_read(self):
@@ -81,16 +81,16 @@ class CustomKWConfigTest(ResTest):
 
             result_1 = StringList()
             success = custom_kw_config.parseResultFile("result_file_1", result_1)
-            self.assertTrue(success)
+            assert success
 
             result_2 = StringList()
             success = custom_kw_config.parseResultFile("result_file_2", result_2)
-            self.assertFalse(success)
+            assert not success
 
             for key in custom_kw_config:
-                self.assertTrue(key in data_1)
+                assert key in data_1
 
-            self.assertFalse("VALUE_3" in custom_kw_config)
+            assert not "VALUE_3" in custom_kw_config
 
     @tmpdir()
     def test_custom_kw_config_parse_fail(self):
@@ -99,9 +99,9 @@ class CustomKWConfigTest(ResTest):
             self.createResultFile("result_file", data)
 
             custom_kw_config = CustomKWConfig("CUSTOM_KW_FAIL", "result_file")
-            self.assertIsNone(custom_kw_config.getOutputFile())
+            assert custom_kw_config.getOutputFile() is None
 
-            self.assertFalse(custom_kw_config.parseResultFile("result_file", StringList()))
+            assert not custom_kw_config.parseResultFile("result_file", StringList())
 
     def test_custom_kw_config_construction_with_definition(self):
         definition = {
@@ -109,11 +109,11 @@ class CustomKWConfigTest(ResTest):
             "VALUE_2": str
         }
         custom_kw_config = CustomKWConfig("TEST", None, definition=definition)
-        self.assertEqual(len(custom_kw_config.getKeys()), 2)
+        assert len(custom_kw_config.getKeys()) == 2
 
-        self.assertTrue(custom_kw_config.keyIsDouble("VALUE_1"))
-        self.assertFalse(custom_kw_config.keyIsDouble("VALUE_2"))
+        assert custom_kw_config.keyIsDouble("VALUE_1")
+        assert not custom_kw_config.keyIsDouble("VALUE_2")
 
-        self.assertIn("VALUE_1", custom_kw_config)
-        self.assertIn("VALUE_2", custom_kw_config)
-        self.assertNotIn("VALUE_3", custom_kw_config)
+        assert "VALUE_1" in custom_kw_config
+        assert "VALUE_2" in custom_kw_config
+        assert "VALUE_3" not in custom_kw_config

@@ -21,7 +21,7 @@ class EnKFLibraryTest(ResTest):
                    ErtTemplate, LocalConfig]
 
         for cls in classes:
-            with self.assertRaises(NotImplementedError):
+            with pytest.raises(NotImplementedError):
                 temp = cls()
 
     @tmpdir(local="simple_config")
@@ -29,13 +29,13 @@ class EnKFLibraryTest(ResTest):
         res_config = ResConfig("simple_config/minimum_config")
         main = EnKFMain(res_config)
 
-        self.assertIsInstance(main.analysisConfig(), AnalysisConfig)
-        self.assertIsInstance(main.eclConfig(), EclConfig)
+        assert isinstance(main.analysisConfig(), AnalysisConfig)
+        assert isinstance(main.eclConfig(), EclConfig)
 
         with self.assertRaises(AssertionError): # Null pointer!
-            self.assertIsInstance(main.eclConfig().getRefcase(), EclSum)
+            assert isinstance(main.eclConfig().getRefcase(), EclSum)
 
         file_system = main.getEnkfFsManager().getCurrentFileSystem()
-        self.assertEqual(file_system.getCaseName(), "default")
+        assert file_system.getCaseName() == "default"
         time_map = file_system.getTimeMap()
-        self.assertIsInstance(time_map, TimeMap)
+        assert isinstance(time_map, TimeMap)

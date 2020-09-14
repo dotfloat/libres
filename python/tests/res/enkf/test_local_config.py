@@ -40,7 +40,7 @@ class LocalConfigTest(ResTest):
 
             fname = "local_config_summary.txt"
             local_config.writeSummaryFile(fname)
-            self.assertTrue(os.path.isfile(fname))
+            assert os.path.isfile(fname)
 
 
     def test_get_grid(self):
@@ -49,50 +49,50 @@ class LocalConfigTest(ResTest):
             local_config = main.getLocalConfig()
             grid = local_config.getGrid()
             dimens = grid.getNX(), grid.getNY(), grid.getNZ()
-            self.assertEqual((10, 10, 5), dimens)
+            assert (10, 10, 5) == dimens
 
 
     def test_local_obs_data(self):
         with ErtTestContext(self.local_conf_path, self.config) as test_context:
             main = test_context.getErt()
-            self.assertTrue(main, msg="Load failed")
+            assert main, msg="Load failed"
 
             local_config = main.getLocalConfig()
 
             local_config.clear()
             updatestep = local_config.getUpdatestep()
-            self.assertEqual(0, len(updatestep))
+            assert 0 == len(updatestep)
 
             # Creating obsdata
             local_obs_data_1 = local_config.createObsdata("OBSSET_1")
-            self.assertTrue(isinstance(local_obs_data_1, LocalObsdata))
+            assert isinstance(local_obs_data_1, LocalObsdata)
 
             # Try to add existing obsdata
-            with self.assertRaises(ValueError):
+            with pytest.raises(ValueError):
                 local_config.createObsdata("OBSSET_1")
 
             # Add node with range
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 local_obs_data_1.addNodeAndRange("MISSING_KEY", 0, 1)
 
             local_obs_data_1.addNodeAndRange("GEN_PERLIN_1", 0, 1)
             local_obs_data_1.addNodeAndRange("GEN_PERLIN_2", 0, 1)
-            self.assertEqual(len(local_obs_data_1), 2)
+            assert len(local_obs_data_1) == 2
 
             # Delete node
             del local_obs_data_1["GEN_PERLIN_1"]
-            self.assertEqual(len(local_obs_data_1), 1)
+            assert len(local_obs_data_1) == 1
 
             # Get node
             node = local_obs_data_1["GEN_PERLIN_2"]
-            self.assertTrue(isinstance(node, LocalObsdataNode))
+            assert isinstance(node, LocalObsdataNode)
 
             # Add node again with no range and check return type
             node_again = local_obs_data_1.addNode("GEN_PERLIN_1")
-            self.assertTrue(isinstance(node_again, LocalObsdataNode))
+            assert isinstance(node_again, LocalObsdataNode)
 
             # Error when adding existing obs node
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 local_obs_data_1.addNode("GEN_PERLIN_1")
 
 
@@ -102,7 +102,7 @@ class LocalConfigTest(ResTest):
 
             local_config = main.getLocalConfig()
             local_obs_data_2 = local_config.createObsdata("OBSSET_2")
-            self.assertTrue(isinstance(local_obs_data_2, LocalObsdata))
+            assert isinstance(local_obs_data_2, LocalObsdata)
 
             # Obsdata
             local_obs_data_2.addNodeAndRange("GEN_PERLIN_1", 0, 1)
@@ -110,14 +110,14 @@ class LocalConfigTest(ResTest):
 
             # Ministep
             ministep = local_config.createMinistep("MINISTEP")
-            self.assertTrue(isinstance(ministep, LocalMinistep))
+            assert isinstance(ministep, LocalMinistep)
 
             # Attach obsset
             ministep.attachObsset(local_obs_data_2)
 
             # Retrieve attached obsset
             local_obs_data_new = ministep.getLocalObsData()
-            self.assertEqual(len(local_obs_data_new), 2)
+            assert len(local_obs_data_new) == 2
 
 
     def test_all_active(self):
@@ -128,12 +128,12 @@ class LocalConfigTest(ResTest):
 
             updatestep = local_config.getUpdatestep()
             ministep = updatestep[0]
-            self.assertEqual(1, len(ministep))
+            assert 1 == len(ministep)
             dataset = ministep["ALL_DATA"]
-            self.assertTrue("PERLIN_PARAM" in dataset)
+            assert "PERLIN_PARAM" in dataset
 
             obsdata = ministep.getLocalObsData()
-            self.assertEqual(len(obsdata), 3)
+            assert len(obsdata) == 3
 
 
     def test_ministep(self):
@@ -145,10 +145,10 @@ class LocalConfigTest(ResTest):
 
             # Ministep
             ministep = local_config.createMinistep("MINISTEP", analysis_module)
-            self.assertTrue(isinstance(ministep, LocalMinistep))
+            assert isinstance(ministep, LocalMinistep)
 
-            self.assertFalse("DATA" in ministep)
-            with self.assertRaises(KeyError):
+            assert not "DATA" in ministep
+            with pytest.raises(KeyError):
                 _ = ministep["DATA"]
 
 
@@ -160,14 +160,14 @@ class LocalConfigTest(ResTest):
 
             # Update step
             updatestep = local_config.getUpdatestep()
-            self.assertTrue(isinstance(updatestep, LocalUpdateStep))
+            assert isinstance(updatestep, LocalUpdateStep)
             upd_size = len(updatestep)
 
             # Ministep
             ministep = local_config.createMinistep("MINISTEP")
-            self.assertTrue(isinstance(ministep, LocalMinistep))
+            assert isinstance(ministep, LocalMinistep)
 
             # Attach
             updatestep.attachMinistep(ministep)
-            self.assertTrue(isinstance(updatestep[0], LocalMinistep))
-            self.assertEqual(len(updatestep), upd_size + 1)
+            assert isinstance(updatestep[0], LocalMinistep)
+            assert len(updatestep) == upd_size + 1

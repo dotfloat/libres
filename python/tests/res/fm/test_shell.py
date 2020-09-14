@@ -28,68 +28,68 @@ class ShellTest(ResTest):
 
     @tmpdir()
     def test_symlink(self):
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             symlink( "target/does/not/exist" , "link")
 
         with open("target", "w") as fileH:
             fileH.write("target ...")
 
         symlink( "target" , "link")
-        self.assertTrue( os.path.islink("link") )
-        self.assertEqual( os.readlink("link") , "target")
+        assert  os.path.islink("link") 
+        assert os.readlink("link") == "target"
 
         with open("target2", "w") as fileH:
             fileH.write("target ...")
 
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             symlink("target2" , "target")
 
 
         symlink("target2" , "link")
-        self.assertTrue( os.path.islink("link") )
-        self.assertEqual( os.readlink("link") , "target2")
+        assert  os.path.islink("link") 
+        assert os.readlink("link") == "target2"
 
         os.makedirs("root1/sub1/sub2")
         os.makedirs("root2/sub1/sub2")
         os.makedirs("run")
 
         symlink("../target" , "linkpath/link")
-        self.assertTrue( os.path.isdir( "linkpath" ))
-        self.assertTrue( os.path.islink( "linkpath/link"))
+        assert  os.path.isdir( "linkpath" )
+        assert  os.path.islink( "linkpath/link")
 
         symlink("../target" , "linkpath/link")
-        self.assertTrue( os.path.isdir( "linkpath" ))
-        self.assertTrue( os.path.islink( "linkpath/link"))
+        assert  os.path.isdir( "linkpath" )
+        assert  os.path.islink( "linkpath/link")
 
         os.makedirs("path")
         with open("path/target", "w") as f:
             f.write("1234")
 
         symlink("path/target" , "link")
-        self.assertTrue( os.path.islink( "link" ))
-        self.assertTrue( os.path.isfile( "path/target" ))
+        assert  os.path.islink( "link" )
+        assert  os.path.isfile( "path/target" )
 
         symlink("path/target" , "link")
-        self.assertTrue( os.path.islink( "link" ))
-        self.assertTrue( os.path.isfile( "path/target" ))
+        assert  os.path.islink( "link" )
+        assert  os.path.isfile( "path/target" )
         with open("link") as f:
             s = f.read( )
-            self.assertEqual( s, "1234" )
+            assert s == "1234"
 
     @tmpdir()
     def test_mkdir(self):
         with open("file", "w") as f:
             f.write("Hei")
 
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             mkdir( "file" )
 
         mkdir("path")
-        self.assertTrue( os.path.isdir( "path"))
+        assert  os.path.isdir( "path")
         mkdir("path")
 
         mkdir("path/subpath")
-        self.assertTrue( os.path.isdir( "path/subpath"))
+        assert  os.path.isdir( "path/subpath")
 
     @tmpdir()
     def test_move_file(self):
@@ -97,29 +97,29 @@ class ShellTest(ResTest):
             f.write("Hei")
 
         move_file("file" , "file2")
-        self.assertTrue( os.path.isfile("file2"))
-        self.assertFalse( os.path.isfile("file"))
+        assert  os.path.isfile("file2")
+        assert not  os.path.isfile("file")
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             move_file("file2" , "path/file2")
 
         mkdir("path")
         move_file("file2" , "path/file2")
-        self.assertTrue( os.path.isfile("path/file2"))
-        self.assertFalse( os.path.isfile( "file2") )
+        assert  os.path.isfile("path/file2")
+        assert not  os.path.isfile( "file2") 
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             move_file("path" , "path2")
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             move_file("not_existing" , "target")
 
         with open("file2","w") as f:
             f.write("123")
 
         move_file("file2" , "path/file2")
-        self.assertTrue( os.path.isfile("path/file2"))
-        self.assertFalse( os.path.isfile( "file2") )
+        assert  os.path.isfile("path/file2")
+        assert not  os.path.isfile( "file2") 
 
         mkdir("rms/ipl")
         with open("global_variables.ipl","w") as f:
@@ -138,14 +138,14 @@ class ShellTest(ResTest):
 
         with open("dst_folder/file", "r") as f:
             content = f.read()
-            self.assertEqual(content, "old")
+            assert content == "old"
 
         move_file("file", "dst_folder")
         with open("dst_folder/file", "r") as f:
             content = f.read()
-            self.assertEqual(content, "new")
+            assert content == "new"
 
-        self.assertFalse(os.path.exists("file"))
+        assert not os.path.exists("file")
 
     @tmpdir()
     def test_move_pathfile_into_folder(self):
@@ -157,9 +157,9 @@ class ShellTest(ResTest):
         move_file("source1/source2/file", "dst_folder")
         with open("dst_folder/file", "r") as f:
             content = f.read()
-            self.assertEqual(content, "stuff")
+            assert content == "stuff"
 
-        self.assertFalse(os.path.exists("source1/source2/file"))
+        assert not os.path.exists("source1/source2/file")
 
     @tmpdir()
     def test_move_pathfile_into_folder_file_exists(self):
@@ -174,14 +174,14 @@ class ShellTest(ResTest):
         move_file("source1/source2/file", "dst_folder")
         with open("dst_folder/file", "r") as f:
             content = f.read()
-            self.assertEqual(content, "stuff")
+            assert content == "stuff"
 
-        self.assertFalse(os.path.exists("source1/source2/file"))
+        assert not os.path.exists("source1/source2/file")
 
     @tmpdir()
     def test_delete_file(self):
         mkdir("pathx")
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             delete_file( "pathx" )
 
         # deleteFile which does not exist - is silently ignored
@@ -190,13 +190,13 @@ class ShellTest(ResTest):
         with open("file" , "w") as f:
             f.write("hei")
         symlink("file", "link")
-        self.assertTrue(os.path.islink("link"))
+        assert os.path.islink("link")
 
         delete_file("file")
-        self.assertFalse( os.path.isfile( "file" ))
-        self.assertTrue( os.path.islink("link"))
+        assert not  os.path.isfile( "file" )
+        assert  os.path.islink("link")
         delete_file("link")
-        self.assertFalse( os.path.islink("link"))
+        assert not  os.path.islink("link")
 
     @tmpdir()
     def test_delete_directory(self):
@@ -206,7 +206,7 @@ class ShellTest(ResTest):
         with open("file" , "w") as f:
             f.write("hei")
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             delete_directory("file")
 
         mkdir("link_target/subpath")
@@ -222,18 +222,18 @@ class ShellTest(ResTest):
 
         symlink( "../link_target" , "path/link")
         delete_directory("path")
-        self.assertFalse( os.path.exists( "path" ))
-        self.assertTrue( os.path.exists("link_target/link_file"))
+        assert not  os.path.exists( "path" )
+        assert  os.path.exists("link_target/link_file")
 
     @tmpdir()
     def test_copy_directory_error(self):
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             copy_directory("does/not/exist" , "target")
 
         with open("file" , "w") as f:
             f.write("hei")
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             copy_directory("hei" , "target")
 
     @tmpdir()
@@ -245,39 +245,39 @@ class ShellTest(ResTest):
         self.monkeypatch.setenv("DATA_ROOT", "path")
         mkdir("target/sub")
         copy_directory("subpath" , "target/sub")
-        self.assertTrue( os.path.exists( "target/sub/subpath" ))
-        self.assertTrue( os.path.exists( "target/sub/subpath/file" ))
+        assert  os.path.exists( "target/sub/subpath" )
+        assert  os.path.exists( "target/sub/subpath/file" )
 
         os.makedirs( "file_target")
         copy_file( "subpath/file" , "file_target")
-        self.assertTrue( os.path.isfile( "file_target/file" ))
+        assert  os.path.isfile( "file_target/file" )
 
         copy_file( "subpath/file" , "subpath/file")
         with open("subpath/file") as f:
             v = int(f.read())
-            self.assertEqual( v, 1 )
+            assert v == 1
 
         with open("path/subpath/file" , "w") as f:
             f.write("2")
         copy_file( "subpath/file" , "subpath/file")
         with open("subpath/file") as f:
             v = int(f.read())
-            self.assertEqual( v, 2 )
+            assert v == 2
 
         symlink( "subpath/file" , "file_link")
-        self.assertTrue( os.path.isfile( "file_link" ))
-        self.assertTrue( os.path.islink( "file_link" ))
-        self.assertEqual( os.readlink( "file_link" ) , "path/subpath/file")
+        assert  os.path.isfile( "file_link" )
+        assert  os.path.islink( "file_link" )
+        assert os.readlink( "file_link" ) == "path/subpath/file"
         delete_directory( "subpath" )
-        self.assertFalse( os.path.isdir( "path/subpath") )
+        assert not  os.path.isdir( "path/subpath") 
 
     @tmpdir()
     def test_copy_file(self):
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             copy_file("does/not/exist" , "target")
 
         mkdir("path")
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             copy_file("path" , "target")
 
 
@@ -285,13 +285,13 @@ class ShellTest(ResTest):
             f.write("hei")
 
         copy_file("file1" , "file2")
-        self.assertTrue( os.path.isfile("file2") )
+        assert  os.path.isfile("file2") 
 
         copy_file("file1" , "path")
-        self.assertTrue( os.path.isfile("path/file1") )
+        assert  os.path.isfile("path/file1") 
 
         copy_file("file1" , "path2/file1")
-        self.assertTrue( os.path.isfile("path2/file1") )
+        assert  os.path.isfile("path2/file1") 
 
 
         mkdir("root/sub/path")
@@ -300,14 +300,14 @@ class ShellTest(ResTest):
             f.write("Hei ...")
 
         copy_file("file" , "root/sub/path/file")
-        self.assertTrue( os.path.isfile( "root/sub/path/file"))
+        assert  os.path.isfile( "root/sub/path/file")
 
         with open("file2" , "w") as f:
             f.write("Hei ...")
 
         with pushd("root/sub/path"):
             copy_file("../../../file2")
-            self.assertTrue(os.path.isfile("file2"))
+            assert os.path.isfile("file2")
 
     @tmpdir()
     def test_copy_file2(self):
@@ -317,7 +317,7 @@ class ShellTest(ResTest):
             f.write("Hei")
 
         copy_file("file.txt" , "rms/output/")
-        self.assertTrue( os.path.isfile( "rms/output/file.txt" ))
+        assert  os.path.isfile( "rms/output/file.txt" )
 
     @tmpdir()
     def test_careful_copy_file(self):
@@ -328,10 +328,10 @@ class ShellTest(ResTest):
 
         careful_copy_file("file1", "file2")
         with open("file2", "r") as f:
-            self.assertEqual("hallo", f.readline())
+            assert "hallo" == f.readline()
 
         careful_copy_file("file1", "file3")
-        self.assertTrue( os.path.isfile("file3") )
+        assert  os.path.isfile("file3") 
 
 
 if __name__ == "__main__":

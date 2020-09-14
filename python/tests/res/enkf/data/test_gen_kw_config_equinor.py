@@ -1,51 +1,41 @@
-import pytest
-
-from tests import ResTest
-from res.test import ErtTestContext
-
 from res.enkf import ErtImplType, GenKwConfig
 
-@pytest.mark.equinor_test
-class GenKwConfigTest(ResTest):
 
-    def setUp(self):
-        self.config = self.createTestPath("Equinor/config/with_data/config")
+CONFIG = "Equinor/config/with_data/config"
 
 
-    def test_gen_kw_config(self):
+def test_gen_kw_config(ert_data):
+    with ert_data(CONFIG_PATH) as context:
+        ert = context.getErt()
 
-        with ErtTestContext("python/enkf/data/gen_kw_config", self.config) as context:
+        result_gen_kw_keys = ert.ensembleConfig().getKeylistFromImplType(ErtImplType.GEN_KW)
 
-            ert = context.getErt()
+        expected_keys = ["GRID_PARAMS", "FLUID_PARAMS", "MULTFLT"]
 
-            result_gen_kw_keys = ert.ensembleConfig().getKeylistFromImplType(ErtImplType.GEN_KW)
+        assert set(result_gen_kw_keys) == set(expected_keys)
+        assert len(expected_keys) == len(result_gen_kw_keys)
 
-            expected_keys = ["GRID_PARAMS", "FLUID_PARAMS", "MULTFLT"]
+        for key in expected_keys:
+            node = ert.ensembleConfig().getNode(key)
+            gen_kw_config = node.getModelConfig()
+            assert isinstance(gen_kw_config, GenKwConfig)
 
-            self.assertItemsEqual(result_gen_kw_keys, expected_keys)
-            self.assertEqual(len(expected_keys), len(result_gen_kw_keys))
+            assert gen_kw_config.getKey() == key
 
-            for key in expected_keys:
-                node = ert.ensembleConfig().getNode(key)
-                gen_kw_config = node.getModelConfig()
-                self.assertIsInstance(gen_kw_config, GenKwConfig)
+            if key == "GRID_PARAMS":
+                expected_values = ["MULTPV2", "MULTPV3"]
 
-                self.assertEqual(gen_kw_config.getKey(), key)
+                assert not gen_kw_config.shouldUseLogScale(0)
+                assert not gen_kw_config.shouldUseLogScale(1)
 
-                if key == "GRID_PARAMS":
-                    expected_values = ["MULTPV2", "MULTPV3"]
+            elif key == "MULTFLT":
+                expected_values = ["F3"]
 
-                    self.assertFalse(gen_kw_config.shouldUseLogScale(0))
-                    self.assertFalse(gen_kw_config.shouldUseLogScale(1))
+                assert gen_kw_config.shouldUseLogScale(0)
 
-                elif key == "MULTFLT":
-                    expected_values = ["F3"]
+            elif key == "FLUID_PARAMS":
+                expected_values = ["SWCR", "SGCR"]
+                assert not gen_kw_config.shouldUseLogScale(0)
+                assert not gen_kw_config.shouldUseLogScale(1)
 
-                    self.assertTrue(gen_kw_config.shouldUseLogScale(0))
-
-                elif key == "FLUID_PARAMS":
-                    expected_values = ["SWCR", "SGCR"]
-                    self.assertFalse(gen_kw_config.shouldUseLogScale(0))
-                    self.assertFalse(gen_kw_config.shouldUseLogScale(1))
-
-                self.assertEqual([value for value in gen_kw_config], expected_values)
+            assert list(gen_kw_config) == expected_values

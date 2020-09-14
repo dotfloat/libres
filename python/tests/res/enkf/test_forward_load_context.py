@@ -5,5 +5,5 @@ class ForwardLoadContextTest(ResTest):
 
     def test_create(self):
         ctx = ForwardLoadContext( report_step = 1 )
-        self.assertEqual( 1 , ctx.getLoadStep( ) )
+        assert 1 == ctx.getLoadStep( )
         

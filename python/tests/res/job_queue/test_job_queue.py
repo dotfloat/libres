@@ -71,7 +71,7 @@ class JobQueueTest(ResTest):
 
     def testStatusEnum(self):
         source_path = "lib/include/ert/job_queue/job_status.hpp"
-        self.assertEnumIsFullyDefined(JobStatusType, "job_status_type", source_path)
+        res_helper.assert_enum_fully_defined(JobStatusType, "job_status_type", source_path)
 
     def test_kill_jobs(self):
         with TestAreaContext("job_queue_test_kill") as work_area:

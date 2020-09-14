@@ -24,4 +24,4 @@ class GenDataTest(ResTest):
             gen_data = data_node.asGenData()
             data = gen_data.getData()
 
-            self.assertEqual(len(data) , 2560)
+            assert len(data) == 2560

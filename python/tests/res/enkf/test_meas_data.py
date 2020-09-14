@@ -12,45 +12,45 @@ class MeasDataTest(ResTest):
         ens_size = 10
         ens_mask = BoolVector( default_value = True , initial_size = ens_size )
         data = MeasData( ens_mask )
-        self.assertEqual( len(data) , 0)
-        self.assertTrue( isinstance( data , MeasData ))
+        assert len(data) == 0
+        assert  isinstance( data , MeasData )
 
         block1 = data.addBlock( "OBS1" , 10 , 5 )
         block2 = data.addBlock( "OBS2" , 27 , 10 )
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             data[1.782]
 
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             data["NO-this-does-not-exist"]
 
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             data[2]
 
         last0 = data[-1]
         last1 = data[1]
-        self.assertEqual( last0 , last1 )
+        assert last0 == last1
 
-        self.assertTrue( "OBS1-10" in data )
-        self.assertTrue( "OBS2-27" in data )
-        self.assertEqual( len(data) , 2)
+        assert  "OBS1-10" in data 
+        assert  "OBS2-27" in data 
+        assert len(data) == 2
 
-        self.assertTrue( isinstance( block1 , MeasBlock ))
-        self.assertTrue( isinstance( block2 , MeasBlock ))
+        assert  isinstance( block1 , MeasBlock )
+        assert  isinstance( block2 , MeasBlock )
 
-        self.assertEqual( block1.getObsSize() , 5 )
-        self.assertEqual( block2.getObsSize() , 10 )
+        assert block1.getObsSize() == 5
+        assert block2.getObsSize() == 10
 
         l = []
         for b in data:
             l.append(b)
 
-        self.assertEqual(len(l) , 2)
-        self.assertEqual(l[0] , block1)
-        self.assertEqual(l[1] , block2)
+        assert len(l) == 2
+        assert l[0] == block1
+        assert l[1] == block2
 
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             S = data.createS()
 
         for iens in range(ens_size):
@@ -58,15 +58,15 @@ class MeasDataTest(ResTest):
             block2[0,iens] = 10
             block2[1,iens] = 15
 
-        self.assertEqual( 3 , data.activeObsSize() )
+        assert 3 == data.activeObsSize()
         S = data.createS()
 
-        self.assertEqual( S.dims() , (3 , ens_size) )
+        assert S.dims() == (3 , ens_size)
 
         for iens in range(ens_size):
-            self.assertEqual( S[0,iens] , 5 )
-            self.assertEqual( S[1,iens] , 10 )
-            self.assertEqual( S[2,iens] , 15 )
+            assert S[0,iens] == 5
+            assert S[1,iens] == 10
+            assert S[2,iens] == 15
 
         pfx = 'MeasData(len = '
-        self.assertEqual(pfx, repr(data)[:len(pfx)])
+        assert pfx == repr(data)[:len(pfx)]

@@ -37,7 +37,7 @@ class EclConfigTest(ResTest):
     @tmpdir()
     def test_load(self):
         self.monkeypatch.setenv("ECL100_SITE_CONFIG", "file/does/not/exist")
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             conf = Ecl100Config()
 
         self.monkeypatch.setenv("ECL100_SITE_CONFIG", os.path.join(self.ecl_config_path, "ecl100_config.yml"))
@@ -47,7 +47,7 @@ class EclConfigTest(ResTest):
             f.write("this:\n -should\n-be\ninvalid:yaml?")
 
         self.monkeypatch.setenv("ECL100_SITE_CONFIG", "file.yml")
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             conf = Ecl100Config()
 
         scalar_path = "scalar"
@@ -87,45 +87,45 @@ class EclConfigTest(ResTest):
 
         conf = Ecl100Config()
         # Fails because there is no version 2020
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             sim = conf.sim("2020")
 
         # Fails because the 2016 version points to a not existing executable
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             sim = conf.sim("2016")
 
         # Fails because the 2016 mpi version points to a non existing mpi executable
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             sim = conf.mpi_sim("2016")
 
         # Fails because the 2017 mpi version mpirun points to a non existing mpi executable
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             sim = conf.mpi_sim("2017")
 
         # Fails because the 2017 scalar version is not registered
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             sim = conf.sim("2017")
 
         sim = conf.sim("2015")
         mpi_sim = conf.mpi_sim("2015")
 
         # Check that global environment has been propagated down.
-        self.assertIn("LICENSE_SERVER", mpi_sim.env)
+        assert "LICENSE_SERVER" in mpi_sim.env
 
         # Check replacement of $ENV_VAR in values.
-        self.assertEqual(mpi_sim.env["I_MPI_ROOT"], "A:B:C")
-        self.assertEqual(mpi_sim.env["TEST_VAR"], "A.B.C $UNKNOWN_VAR")
-        self.assertEqual(len(mpi_sim.env), 1 + 5)
+        assert mpi_sim.env["I_MPI_ROOT"] == "A:B:C"
+        assert mpi_sim.env["TEST_VAR"] == "A.B.C $UNKNOWN_VAR"
+        assert len(mpi_sim.env) == 1 + 5
 
         sim = conf.sim("2015")
-        self.assertEqual(sim.executable, scalar_exe)
-        self.assertIsNone(sim.mpirun)
+        assert sim.executable == scalar_exe
+        assert sim.mpirun is None
 
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             simulators = conf.simulators()
 
         simulators = conf.simulators(strict = False)
-        self.assertEqual(len(simulators), 2)
+        assert len(simulators) == 2
 
     @tmpdir()
     def test_default(self):
@@ -148,26 +148,26 @@ class EclConfigTest(ResTest):
 
         conf = Ecl100Config()
         sim = conf.sim()
-        self.assertEqual(sim.version, "2015")
-        self.assertIn("2015", conf)
-        self.assertNotIn("xxxx", conf)
-        self.assertIn(Keys.default, conf)
-        self.assertIn(None, conf)
+        assert sim.version == "2015"
+        assert "2015" in conf
+        assert "xxxx" not in conf
+        assert Keys.default in conf
+        assert None in conf
 
         sim = conf.sim("default")
-        self.assertEqual(sim.version, "2015")
+        assert sim.version == "2015"
 
         with open("file.yml", "w") as f:
             f.write( yaml.dump(d0) )
 
         conf = Ecl100Config()
-        self.assertNotIn(Keys.default, conf)
-        self.assertIsNone(conf.default_version)
+        assert Keys.default not in conf
+        assert conf.default_version is None
 
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             sim = conf.sim()
 
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             sim = conf.sim(Keys.default)
 
 

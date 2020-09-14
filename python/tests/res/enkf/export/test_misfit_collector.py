@@ -21,5 +21,5 @@ class MisfitCollectorTest(ResTest):
 
             realization_20 = data.loc[20]
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 realization_60 = data.loc[60]

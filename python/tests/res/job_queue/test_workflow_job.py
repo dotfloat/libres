@@ -22,8 +22,8 @@ class WorkflowJobTest(ResTest):
     def test_workflow_job_creation(self):
         workflow_job = WorkflowJob("Test")
 
-        self.assertTrue(workflow_job.isInternal())
-        self.assertEqual(workflow_job.name(), "Test")
+        assert workflow_job.isInternal()
+        assert workflow_job.name() == "Test"
 
 
     def test_read_internal_function(self):
@@ -34,21 +34,21 @@ class WorkflowJobTest(ResTest):
             config = self._alloc_config()
             workflow_job = self._alloc_from_file("SELECT_CASE", config, "select_case_job")
 
-            self.assertEqual(workflow_job.name(), "SELECT_CASE")
-            self.assertTrue(workflow_job.isInternal())
-            self.assertEqual(workflow_job.functionName(), "enkf_main_select_case_JOB")
+            assert workflow_job.name() == "SELECT_CASE"
+            assert workflow_job.isInternal()
+            assert workflow_job.functionName() == "enkf_main_select_case_JOB"
 
-            self.assertFalse(workflow_job.isInternalScript())
-            self.assertIsNone(workflow_job.getInternalScriptPath())
+            assert not workflow_job.isInternalScript()
+            assert workflow_job.getInternalScriptPath() is None
 
 
             workflow_job = self._alloc_from_file("SUBTRACT", config, "subtract_script_job")
-            self.assertEqual(workflow_job.name(), "SUBTRACT")
-            self.assertTrue(workflow_job.isInternal())
-            self.assertIsNone(workflow_job.functionName())
+            assert workflow_job.name() == "SUBTRACT"
+            assert workflow_job.isInternal()
+            assert workflow_job.functionName() is None
 
-            self.assertTrue(workflow_job.isInternalScript())
-            self.assertTrue(workflow_job.getInternalScriptPath().endswith("subtract_script.py"))
+            assert workflow_job.isInternalScript()
+            assert workflow_job.getInternalScriptPath().endswith("subtract_script.py")
 
 
 
@@ -59,12 +59,12 @@ class WorkflowJobTest(ResTest):
             config = self._alloc_config()
             job = self._alloc_from_file("PRINTF", config, "printf_job")
 
-            self.assertEqual(job.minimumArgumentCount(), 4)
-            self.assertEqual(job.maximumArgumentCount(), 5)
-            self.assertEqual(job.argumentTypes(), [str, int, float, bool, str])
+            assert job.minimumArgumentCount() == 4
+            assert job.maximumArgumentCount() == 5
+            assert job.argumentTypes() == [str, int, float, bool, str]
 
-            self.assertTrue(job.run(None, ["x %d %f %d", 1, 2.5, True]))
-            self.assertTrue(job.run(None, ["x %d %f %d %s", 1, 2.5, True, "y"]))
+            assert job.run(None, ["x %d %f %d", 1, 2.5, True])
+            assert job.run(None, ["x %d %f %d %s", 1, 2.5, True, "y"])
 
             with self.assertRaises(UserWarning): # Too few arguments
                 job.run(None, ["x %d %f", 1, 2.5])
@@ -81,14 +81,14 @@ class WorkflowJobTest(ResTest):
             config = self._alloc_config()
             job = self._alloc_from_file("DUMP", config, "dump_job")
 
-            self.assertFalse(job.isInternal())
+            assert not job.isInternal()
             argTypes = job.argumentTypes()
-            self.assertEqual( argTypes , [str , str] )
-            self.assertIsNone(job.run(None, ["test", "text"]))
-            self.assertEqual(job.stdoutdata(), "Hello World\n")
+            assert argTypes == [str , str]
+            assert job.run(None, ["test", "text"]) is None
+            assert job.stdoutdata() == "Hello World\n"
 
             with open("test", "r") as f:
-                self.assertEqual(f.read(), "text")
+                assert f.read() == "text"
 
     def test_error_handling_external_job(self):
 
@@ -98,10 +98,10 @@ class WorkflowJobTest(ResTest):
             config = self._alloc_config()
             job = self._alloc_from_file("DUMP", config, "dump_failing_job")
 
-            self.assertFalse(job.isInternal())
+            assert not job.isInternal()
             argTypes = job.argumentTypes()
-            self.assertIsNone(job.run(None, []))
-            self.assertTrue(job.stderrdata().startswith('Traceback'))
+            assert job.run(None, []) is None
+            assert job.stderrdata().startswith('Traceback')
 
 
     def test_run_internal_script(self):
@@ -113,5 +113,4 @@ class WorkflowJobTest(ResTest):
 
             result = job.run(None, ["1", "2"])
 
-            self.assertEqual(result, -1)
-
+            assert result == -1

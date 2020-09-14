@@ -62,7 +62,7 @@ class RNGConfigTest(ResTest):
         self.assertEqual(seed_store,
                          res_config.rng_config.store_filename)
 
-        self.assertIsNone(res_config.rng_config.random_seed)
+        assert res_config.rng_config.random_seed is None
 
     @tmpdir(local="simple_config")
     def test_dict_constructor(self):
@@ -74,14 +74,14 @@ class RNGConfigTest(ResTest):
                                         ConfigKeys.LOAD_SEED: seed_load}
         rng_config = RNGConfig(config_dict=config["SIMULATION"]["SEED"])
         res_config = ResConfig(config=config)
-        self.assertEqual(rng_config, res_config.rng_config)
+        assert rng_config == res_config.rng_config
 
         random_seed = "abcdefghijklmnop"
         config["SIMULATION"]["SEED"] = {ConfigKeys.RANDOM_SEED: random_seed}
 
         rng_config = RNGConfig(config_dict=config["SIMULATION"]["SEED"])
         res_config = ResConfig(config=config)
-        self.assertEqual(rng_config, res_config.rng_config)
+        assert rng_config == res_config.rng_config
 
         #seed store and seed load should be ignored by both constructors
         config["SIMULATION"]["SEED"] = {ConfigKeys.RANDOM_SEED: random_seed,
@@ -91,7 +91,7 @@ class RNGConfigTest(ResTest):
 
         rng_config = RNGConfig(config_dict=config["SIMULATION"]["SEED"])
         res_config = ResConfig(config=config)
-        self.assertEqual(rng_config, res_config.rng_config)
+        assert rng_config == res_config.rng_config
 
     @tmpdir(local="simple_config")
     def test_random_seed(self):
@@ -102,10 +102,10 @@ class RNGConfigTest(ResTest):
 
         res_config = ResConfig(config=config)
 
-        self.assertIsNone(res_config.rng_config.load_filename)
-        self.assertIsNone(res_config.rng_config.store_filename)
+        assert res_config.rng_config.load_filename is None
+        assert res_config.rng_config.store_filename is None
 
-        self.assertEqual(random_seed, res_config.rng_config.random_seed)
+        assert random_seed == res_config.rng_config.random_seed
 
 
     @tmpdir(local="simple_config")
@@ -121,7 +121,7 @@ class RNGConfigTest(ResTest):
 
         res_config = ResConfig(config=config)
 
-        self.assertIsNone(res_config.rng_config.load_filename)
-        self.assertIsNone(res_config.rng_config.store_filename)
+        assert res_config.rng_config.load_filename is None
+        assert res_config.rng_config.store_filename is None
 
-        self.assertEqual(random_seed, res_config.rng_config.random_seed)
+        assert random_seed == res_config.rng_config.random_seed

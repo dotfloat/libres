@@ -91,7 +91,7 @@ class RMLTest(ResTest):
 
     def test_load_status_enum(self):
         source_file_path = "lib/include/ert/analysis/analysis_module.hpp"
-        self.assertEnumIsFullyDefined(AnalysisModuleLoadStatusEnum, "analysis_module_load_status_enum", source_file_path)
+        res_helper.assert_enum_fully_defined(AnalysisModuleLoadStatusEnum, "analysis_module_load_status_enum", source_file_path)
 
 
     @tmpdir()
@@ -126,10 +126,9 @@ class RMLTest(ResTest):
         ens_mask[10] = False
         ens_mask[5] = False
         (A , S , E , D , R , dObs) = init_matrices( ens , ens_mask , obs, rng)
-        self.assertEqual( S.dims() , (obs_size , ens_mask.countEqual( True )))
-        self.assertEqual( E.dims() , (obs_size , ens_mask.countEqual( True )))
-        self.assertEqual( D.dims() , (obs_size , ens_mask.countEqual( True )))
+        assert S.dims() == (obs_size , ens_mask.countEqual( True ))
+        assert E.dims() == (obs_size , ens_mask.countEqual( True ))
+        assert D.dims() == (obs_size , ens_mask.countEqual( True ))
 
         module.initUpdate(ens_mask, obs_mask, S, R, dObs, E, D, rng)
         module.updateA(A, S, R, dObs, E ,D, rng)
-

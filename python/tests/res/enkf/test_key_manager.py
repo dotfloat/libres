@@ -12,12 +12,12 @@ class KeyManagerTest(ResTest):
             ert = testContext.getErt()
             key_man = KeyManager(ert)
 
-            self.assertEqual( len(key_man.summaryKeys()), 47)
-            self.assertTrue("FOPT" in key_man.summaryKeys())
+            assert len(key_man.summaryKeys()) == 47
+            assert "FOPT" in key_man.summaryKeys()
 
-            self.assertEqual(len(key_man.summaryKeysWithObservations()), 2)
-            self.assertTrue("FOPR" in key_man.summaryKeysWithObservations())
-            self.assertTrue(key_man.isKeyWithObservations("FOPR"))
+            assert len(key_man.summaryKeysWithObservations()) == 2
+            assert "FOPR" in key_man.summaryKeysWithObservations()
+            assert key_man.isKeyWithObservations("FOPR")
 
 
     def test_gen_data_keys(self):
@@ -25,25 +25,25 @@ class KeyManagerTest(ResTest):
             ert = testContext.getErt()
             key_man = KeyManager(ert)
 
-            self.assertEqual( len(key_man.genDataKeys()), 3)
-            self.assertTrue("SNAKE_OIL_WPR_DIFF@199" in key_man.genDataKeys())
+            assert len(key_man.genDataKeys()) == 3
+            assert "SNAKE_OIL_WPR_DIFF@199" in key_man.genDataKeys()
 
-            self.assertEqual(len(key_man.genDataKeysWithObservations()), 1)
-            self.assertTrue("SNAKE_OIL_WPR_DIFF@199" in key_man.genDataKeysWithObservations())
-            self.assertTrue(key_man.isKeyWithObservations("SNAKE_OIL_WPR_DIFF@199"))
+            assert len(key_man.genDataKeysWithObservations()) == 1
+            assert "SNAKE_OIL_WPR_DIFF@199" in key_man.genDataKeysWithObservations()
+            assert key_man.isKeyWithObservations("SNAKE_OIL_WPR_DIFF@199")
 
     def test_custom_keys(self):
         with ErtTestContext("enkf_key_manager_test", self.config_file) as testContext:
             ert = testContext.getErt()
             key_man = KeyManager(ert)
 
-            self.assertEqual( len(key_man.customKwKeys()), 2)
-            self.assertTrue("SNAKE_OIL_NPV:NPV" in key_man.customKwKeys())
+            assert len(key_man.customKwKeys()) == 2
+            assert "SNAKE_OIL_NPV:NPV" in key_man.customKwKeys()
 
     def test_gen_kw_keys(self):
         with ErtTestContext("enkf_key_manager_test", self.config_file) as testContext:
             ert = testContext.getErt()
             key_man = KeyManager(ert)
 
-            self.assertEqual(len(key_man.genKwKeys()), 10)
-            self.assertTrue("SNAKE_OIL_PARAM:BPR_555_PERSISTENCE" in key_man.genKwKeys())
+            assert len(key_man.genKwKeys()) == 10
+            assert "SNAKE_OIL_PARAM:BPR_555_PERSISTENCE" in key_man.genKwKeys()

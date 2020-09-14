@@ -47,14 +47,14 @@ class EnKFRunpathTest(ResTest):
         fs = main.getEnkfFsManager().getCurrentFileSystem()
         run_context = main.getRunContextENSEMPLE_EXPERIMENT(fs, iactive)
         main.createRunpath(run_context)
-        self.assertFileExists('snake_oil_no_data/storage/snake_oil/runpath/realisation-0/iter-0/parameters.txt')
-        self.assertEqual(len(os.listdir('snake_oil_no_data/storage/snake_oil/runpath')), 1)
-        self.assertEqual(len(os.listdir('snake_oil_no_data/storage/snake_oil/runpath/realisation-0')), 1)
+        assert os.path.isfile('snake_oil_no_data/storage/snake_oil/runpath/realisation-0/iter-0/parameters.txt')
+        assert len(os.listdir('snake_oil_no_data/storage/snake_oil/runpath')) == 1
+        assert len(os.listdir('snake_oil_no_data/storage/snake_oil/runpath/realisation-0')) == 1
 
         rp = main.create_runpath_list( )
-        self.assertEqual(len(rp), 0)
+        assert len(rp) == 0
         rp.load()
-        self.assertEqual(len(rp), 1)
+        assert len(rp) == 1
 
     @tmpdir(local="snake_oil_no_data")
     def test_without_gen_kw(self):
@@ -65,7 +65,7 @@ class EnKFRunpathTest(ResTest):
         fs = main.getEnkfFsManager().getCurrentFileSystem()
         run_context = main.getRunContextENSEMPLE_EXPERIMENT(fs, iactive)
         main.createRunpath(run_context)
-        self.assertDirectoryExists('snake_oil_no_data/storage/snake_oil_no_gen_kw/runpath/realisation-0/iter-0')
-        self.assertFileDoesNotExist('snake_oil_no_data/storage/snake_oil_no_gen_kw/runpath/realisation-0/iter-0/parameters.txt')
-        self.assertEqual(len(os.listdir('snake_oil_no_data/storage/snake_oil_no_gen_kw/runpath')), 1)
-        self.assertEqual(len(os.listdir('snake_oil_no_data/storage/snake_oil_no_gen_kw/runpath/realisation-0')), 1)
+        assert os.path.isdir('snake_oil_no_data/storage/snake_oil_no_gen_kw/runpath/realisation-0/iter-0')
+        assert not os.path.isfile('snake_oil_no_data/storage/snake_oil_no_gen_kw/runpath/realisation-0/iter-0/parameters.txt')
+        assert len(os.listdir('snake_oil_no_data/storage/snake_oil_no_gen_kw/runpath')) == 1
+        assert len(os.listdir('snake_oil_no_data/storage/snake_oil_no_gen_kw/runpath/realisation-0')) == 1

@@ -35,7 +35,7 @@ class QueueConfigTest(ResTest):
 
         config_content = ConfigContent(config_file)
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             queue_config = QueueConfig(user_config_file=config_file, config_content=config_content)
 
     @tmpdir(local="simple_config")
@@ -57,4 +57,4 @@ class QueueConfigTest(ResTest):
 
         queue_config_file = QueueConfig(user_config_file=config_file)
         queue_config_dict = QueueConfig(config_dict=config_dict)
-        self.assertEqual(queue_config_dict, queue_config_file)
+        assert queue_config_dict == queue_config_file

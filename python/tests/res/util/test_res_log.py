@@ -45,4 +45,3 @@ def test_init_perm_denied(tmpdir):
         os.chmod("read_only", 0o500)
         with pytest.raises(IOError):
             ResLog.init(1, "read_only/logfile.txt", True)
-

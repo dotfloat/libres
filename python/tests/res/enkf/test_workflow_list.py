@@ -65,11 +65,11 @@ class ErtWorkflowListTest(ResTest):
         res_config = ResConfig(config_file)
         list_from_content = res_config.ert_workflow_list
         list_from_dict = ErtWorkflowList(subst_list=res_config.subst_config.subst_list, config_dict=self.config_dict)
-        self.assertEqual(list_from_content, list_from_dict)
+        assert list_from_content == list_from_dict
 
     def test_illegal_configs(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             ErtWorkflowList(subst_list=[], config_dict=[], config_content=[])
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             ErtWorkflowList()

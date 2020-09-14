@@ -8,10 +8,10 @@ from res.enkf.enums import GenDataFileType
 class EnsembleConfigTest(ResTest):
     def test_create(self):
         conf = EnsembleConfig( )
-        self.assertEqual( len(conf) , 0 )
-        self.assertFalse( "XYZ" in conf )
+        assert len(conf) == 0
+        assert not  "XYZ" in conf 
 
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             node = conf["KEY"]
 
     @tmpdir(local="configuration_tests")
@@ -117,4 +117,4 @@ class EnsembleConfigTest(ResTest):
         res_config = ResConfig('configuration_tests/ensemble_config.ert')
         ensemble_config_file = res_config.ensemble_config
         ensemble_config_dict = EnsembleConfig(config_dict=config_dict, grid=res_config.ecl_config.getGrid())
-        self.assertEqual(ensemble_config_dict, ensemble_config_file)
+        assert ensemble_config_dict == ensemble_config_file

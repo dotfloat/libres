@@ -35,26 +35,26 @@ class FieldConfigTest(ResTest):
 
         ft = FieldConfig.guessFiletype(fname)
         grdecl_type = EnkfFieldFileFormatEnum(5)
-        self.assertEqual('ECL_GRDECL_FILE', grdecl_type.name)
-        self.assertEqual(grdecl_type, ft)
+        assert 'ECL_GRDECL_FILE' == grdecl_type.name
+        assert grdecl_type == ft
 
     def test_field_type_enum(self):
-        self.assertEqual(FieldTypeEnum(2), FieldTypeEnum.ECLIPSE_PARAMETER)
+        assert FieldTypeEnum(2) == FieldTypeEnum.ECLIPSE_PARAMETER
         gen = FieldTypeEnum.GENERAL
-        self.assertEqual('GENERAL', str(gen))
+        assert 'GENERAL' == str(gen)
         gen = FieldTypeEnum(3)
-        self.assertEqual('GENERAL', str(gen))
+        assert 'GENERAL' == str(gen)
 
     def test_export_format(self):
-        self.assertEqual(FieldConfig.exportFormat("file.grdecl"),     EnkfFieldFileFormatEnum.ECL_GRDECL_FILE)
-        self.assertEqual(FieldConfig.exportFormat("file.xyz.grdecl"), EnkfFieldFileFormatEnum.ECL_GRDECL_FILE)
-        self.assertEqual(FieldConfig.exportFormat("file.roFF"),       EnkfFieldFileFormatEnum.RMS_ROFF_FILE)
-        self.assertEqual(FieldConfig.exportFormat("file.xyz.roFF"),   EnkfFieldFileFormatEnum.RMS_ROFF_FILE)
+        assert FieldConfig.exportFormat("file.grdecl") == EnkfFieldFileFormatEnum.ECL_GRDECL_FILE
+        assert FieldConfig.exportFormat("file.xyz.grdecl") == EnkfFieldFileFormatEnum.ECL_GRDECL_FILE
+        assert FieldConfig.exportFormat("file.roFF") == EnkfFieldFileFormatEnum.RMS_ROFF_FILE
+        assert FieldConfig.exportFormat("file.xyz.roFF") == EnkfFieldFileFormatEnum.RMS_ROFF_FILE
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             FieldConfig.exportFormat("file.xyz")
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             FieldConfig.exportFormat("file.xyz")
 
     def test_basics(self):
@@ -65,9 +65,9 @@ class FieldConfigTest(ResTest):
         print(repr(fc))
         pfx = 'FieldConfig(type'
         rep = repr(fc)
-        self.assertEqual(pfx, rep[:len(pfx)])
+        assert pfx == rep[:len(pfx)]
         fc_xyz = fc.get_nx(),fc.get_ny(),fc.get_nz()
         ex_xyz = 17,13,11
-        self.assertEqual(ex_xyz, fc_xyz)
-        self.assertEqual(0,     fc.get_truncation_mode())
-        self.assertEqual(ex_xyz, (grid.getNX(), grid.getNY(), grid.getNZ()))
+        assert ex_xyz == fc_xyz
+        assert 0 == fc.get_truncation_mode()
+        assert ex_xyz == (grid.getNX(), grid.getNY(), grid.getNZ())

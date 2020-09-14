@@ -24,27 +24,26 @@ class EnKFFSManagerTest2(ResTest):
         with ErtTestContext("enkf_fs_manager_rotate_test", self.config_file) as testContext:
             ert = testContext.getErt()
             fsm = ert.getEnkfFsManager()
-            self.assertEqual(0, fsm.getFileSystemCount())
+            assert 0 == fsm.getFileSystemCount()
 
             fs_list = []
             for index in range(EnkfFsManager.DEFAULT_CAPACITY):
                 fs_list.append(fsm.getFileSystem("fs_fill_%d" % index))
 
             for fs in fs_list:
-                self.assertEqual(2, fs.refCount())
+                assert 2 == fs.refCount()
                 fs_copy = fs.copy( )
-                self.assertEqual(3, fs.refCount())
-                self.assertEqual(3, fs_copy.refCount())
+                assert 3 == fs.refCount()
+                assert 3 == fs_copy.refCount()
 
                 del fs_copy
-                self.assertEqual(2, fs.refCount())
+                assert 2 == fs.refCount()
 
 
-            self.assertEqual(EnkfFsManager.DEFAULT_CAPACITY, fsm.getFileSystemCount())
+            assert EnkfFsManager.DEFAULT_CAPACITY == fsm.getFileSystemCount()
 
             for i in range(3 * EnkfFsManager.DEFAULT_CAPACITY):
                 fs_name = "fs_test_%d" % i
                 sys.stderr.write("Mounting: %s\n" % fs_name)
                 fs = fsm.getFileSystem(fs_name)
-                self.assertEqual(EnkfFsManager.DEFAULT_CAPACITY, fsm.getFileSystemCount())
-
+                assert EnkfFsManager.DEFAULT_CAPACITY == fsm.getFileSystemCount()

@@ -34,28 +34,28 @@ class LabScaleTest(ResTest):
             ert = test_context.getErt()
             obs = ert.getObservations()
 
-            self.assertEqual(4, len(obs))
+            assert 4 == len(obs)
             for v in obs:
-                self.assertTrue(isinstance(v, ObsVector))
+                assert isinstance(v, ObsVector)
 
             v1 = obs["WWCT_1"]
-            self.assertEqual( v1.activeStep() , 5 )
+            assert v1.activeStep() == 5
             node = v1.getNode( 5 )
             self.assertFloatEqual( node.getValue() , 0.00)
 
             v2 = obs["WWCT_2"]
-            self.assertEqual( v2.activeStep() , 31 )
+            assert v2.activeStep() == 31
             node = v2.getNode( 31 )
             self.assertFloatEqual( node.getValue() , 0.575828)
 
             v3 = obs["WWCT_3"]
-            self.assertEqual( v3.activeStep() , 73 )
+            assert v3.activeStep() == 73
             node = v3.getNode( 73 )
             self.assertFloatEqual( node.getValue() , 1.00)
 
 
             bpr = obs["BPR"]
-            self.assertEqual( bpr.activeStep() , 31 )
+            assert bpr.activeStep() == 31
             node = bpr.getNode( 31 )
             self.assertFloatEqual( node.getValue(0) , 10.284)
 
@@ -69,12 +69,12 @@ class LabScaleTest(ResTest):
 
 
             v0 = obs["WCT0"]
-            self.assertEqual( v0.activeStep() , 18 )
+            assert v0.activeStep() == 18
             node = v0.getNode( 18 )
-            self.assertEqual( node.getValue() , 0.12345 )
+            assert node.getValue() == 0.12345
 
 
             v1 = obs["WCT1"]
-            self.assertEqual( v1.activeStep() , 18 )
+            assert v1.activeStep() == 18
             node = v1.getNode( 18 )
-            self.assertEqual( node.getValue() , 0.12345 )
+            assert node.getValue() == 0.12345

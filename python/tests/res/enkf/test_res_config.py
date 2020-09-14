@@ -306,7 +306,7 @@ class ResConfigTest(ResTest):
     @tmpdir()
     def test_invalid_user_config(self):
         self.set_up_simple()
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             ResConfig("this/is/not/a/file")
 
     @tmpdir(local="simple_config")
@@ -318,8 +318,8 @@ class ResConfigTest(ResTest):
         config_file = "simple_config/minimum_config"
         res_config = ResConfig(user_config_file=config_file)
 
-        self.assertEqual( res_config.model_config.data_root( ) , os.path.join( cwd , "simple_config"))
-        self.assertEqual( clib_getenv("DATA_ROOT") , os.path.join( cwd , "simple_config"))
+        assert res_config.model_config.data_root( ) == os.path.join( cwd , "simple_config")
+        assert clib_getenv("DATA_ROOT") == os.path.join( cwd , "simple_config")
 
         # This fails with an not-understandable Python error:
         #-----------------------------------------------------------------
@@ -327,30 +327,30 @@ class ResConfigTest(ResTest):
         # self.assertEqual( res_config.model_config.data_root( ) , "NEW")
         # self.assertEqual( clib_getenv("DATA_ROOT") , "NEW")
 
-        self.assertIsNotNone(res_config)
+        assert res_config is not None
         self.assert_same_config_file(config_file, res_config.user_config_file, os.getcwd())
 
-        self.assertIsNotNone(res_config.site_config)
-        self.assertTrue(isinstance(res_config.site_config, SiteConfig))
+        assert res_config.site_config is not None
+        assert isinstance(res_config.site_config, SiteConfig)
 
-        self.assertIsNotNone(res_config.analysis_config)
-        self.assertTrue(isinstance(res_config.analysis_config, AnalysisConfig))
+        assert res_config.analysis_config is not None
+        assert isinstance(res_config.analysis_config, AnalysisConfig)
 
-        self.assertEqual( res_config.config_path , os.path.join( cwd , "simple_config"))
+        assert res_config.config_path == os.path.join( cwd , "simple_config")
 
         config_file = os.path.join( cwd, "simple_config/minimum_config")
         res_config = ResConfig(user_config_file=config_file)
-        self.assertEqual( res_config.config_path , os.path.join( cwd , "simple_config"))
+        assert res_config.config_path == os.path.join( cwd , "simple_config")
 
         os.chdir("simple_config")
         config_file = "minimum_config"
         res_config = ResConfig(user_config_file=config_file)
-        self.assertEqual( res_config.config_path , os.path.join( cwd , "simple_config"))
+        assert res_config.config_path == os.path.join( cwd , "simple_config")
 
         subst_config = res_config.subst_config
         for t in subst_config:
             print(t)
-        self.assertEqual( subst_config["<CONFIG_PATH>"], os.path.join( cwd , "simple_config"))
+        assert subst_config["<CONFIG_PATH>"] == os.path.join( cwd , "simple_config")
 
     def assert_same_config_file(self, expected_filename, filename, prefix):
         prefix_path = lambda fn: fn if os.path.isabs(fn) else os.path.join(prefix, fn)
@@ -363,7 +363,7 @@ class ResConfigTest(ResTest):
 
 
     def assert_path(self, rel_path, config_path, model_path):
-        self.assertEqual( os.path.normpath( os.path.join( rel_path , config_path )), model_path)
+        assert os.path.normpath( os.path.join( rel_path , config_path )) == model_path
 
 
     def assert_model_config(self, model_config, config_data, working_dir):
@@ -422,14 +422,14 @@ class ResConfigTest(ResTest):
             exp = config_data[key]
             errmsg = 'Error for key {key}, expected: "{exp}", was: "{act}".'
             errmsg = errmsg.format(key=key, act=act, exp=exp)
-            self.assertEqual(exp, act, msg=errmsg)
+            assert exp == act
 
     def assert_site_config(self, site_config, config_data, working_dir):
-        self.assertEqual(site_config.umask, config_data['UMASK'])
+        assert site_config.umask == config_data['UMASK']
 
         job_list = site_config.get_installed_jobs()
         for job_name in config_data["INSTALL_JOB"]:
-            self.assertTrue(job_name in job_list)
+            assert job_name in job_list
 
             exp_job_data = config_data["INSTALL_JOB"][job_name]
 
@@ -515,7 +515,7 @@ class ResConfigTest(ResTest):
                 )
 
         for w_name in config_data["LOAD_WORKFLOW"]:
-            self.assertTrue(w_name in ert_workflow_list)
+            assert w_name in ert_workflow_list
 
             self.assert_same_config_file(
                     config_data["LOAD_WORKFLOW"][w_name],
@@ -524,10 +524,10 @@ class ResConfigTest(ResTest):
                     )
 
         for wj_name in config_data["LOAD_WORKFLOW_JOB"]:
-            self.assertTrue(ert_workflow_list.hasJob(wj_name))
+            assert ert_workflow_list.hasJob(wj_name)
             job = ert_workflow_list.getJob(wj_name)
 
-            self.assertEqual(wj_name, job.name())
+            assert wj_name == job.name()
             self.assert_same_config_file(
                     config_data["LOAD_WORKFLOW_JOB"][wj_name],
                     job.executable(),
@@ -624,7 +624,7 @@ class ResConfigTest(ResTest):
             }
         }
 
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             ResConfig( config = config )
 
     @tmpdir(local="snake_oil_structure")
@@ -692,4 +692,4 @@ class ResConfigTest(ResTest):
         #open config via dictionary
         res_config_dict = ResConfig(config_dict = config_data_new)
 
-        self.assertEqual(res_config_file, res_config_dict)
+        assert res_config_file == res_config_dict

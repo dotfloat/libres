@@ -22,4 +22,4 @@ from res.analysis import AnalysisModuleOptionsEnum
 class AnalysisOptionsEnumTest(ResTest):
     def test_items(self):
         source_file_path = "lib/include/ert/analysis/analysis_module.hpp"
-        self.assertEnumIsFullyDefined(AnalysisModuleOptionsEnum, "analysis_module_flag_enum", source_file_path)
+        res_helper.assert_enum_fully_defined(AnalysisModuleOptionsEnum, "analysis_module_flag_enum", source_file_path)

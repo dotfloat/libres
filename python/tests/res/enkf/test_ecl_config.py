@@ -42,27 +42,27 @@ class EclConfigTest(ResTest):
         smspec_file = self.createTestPath( SMSPEC_file )
         ec = EclConfig()
         ui = ec.validateGridFile( grid_file )
-        self.assertTrue( ui )
-        self.assertTrue( isinstance(ui , UIReturn ))
+        assert  ui 
+        assert  isinstance(ui , UIReturn )
 
         ui = ec.validateGridFile( "Does/Not/Exist" )
-        self.assertFalse( ui )
+        assert not  ui 
 
-        self.assertTrue( os.path.exists( smspec_file ))
+        assert  os.path.exists( smspec_file )
         ui = ec.validateGridFile( smspec_file )
-        self.assertFalse( ui )
+        assert not  ui 
 
     @pytest.mark.equinor_test
     def test_datafile(self):
         ec = EclConfig()
         ui = ec.validateDataFile( "DoesNotExist" )
-        self.assertFalse( ui )
+        assert not  ui 
 
         dfile = self.createTestPath( DATA_file )
         ui = ec.validateDataFile( dfile )
-        self.assertTrue( ui )
+        assert  ui 
         ec.setDataFile( dfile )
-        self.assertEqual( dfile , ec.getDataFile() )
+        assert dfile == ec.getDataFile()
 
 
     @pytest.mark.equinor_test
@@ -73,17 +73,17 @@ class EclConfigTest(ResTest):
         ifile = self.createTestPath( INIT_file )
 
         ui = ec.validateInitSection( ifile )
-        self.assertFalse( ui )
+        assert not  ui 
 
         ec.setDataFile( dfile )
         ui = ec.validateInitSection( ifile )
-        self.assertFalse( ui )
+        assert not  ui 
 
         ec.setDataFile( difile )
         ui = ec.validateInitSection( ifile )
-        self.assertTrue( ui )
+        assert  ui 
         ec.setInitSection( ifile )
-        self.assertTrue( ifile , ec.getInitSection() )
+        assert  ifile , ec.getInitSection() 
 
     @pytest.mark.equinor_test
     def test_refcase( self ):
@@ -91,15 +91,15 @@ class EclConfigTest(ResTest):
         dfile = self.createTestPath( DATA_file )
 
         ui = ec.validateRefcase( "Does/not/exist" )
-        self.assertFalse( ui )
+        assert not  ui 
 
         ui = ec.validateRefcase( dfile )
-        self.assertTrue( ui )
+        assert  ui 
         ec.loadRefcase( dfile )
         refcase = ec.getRefcase()
-        self.assertTrue( isinstance( refcase , EclSum ))
+        assert  isinstance( refcase , EclSum )
         refcaseName = ec.getRefcaseName() + ".DATA"
-        self.assertEqual( dfile , refcaseName )
+        assert dfile == refcaseName
 
     @tmpdir(local="configuration_tests")
     def test_ecl_config_constructor(self):
@@ -115,4 +115,4 @@ class EclConfigTest(ResTest):
         ecl_config_file = res_config.ecl_config
         ecl_config_dict = EclConfig(config_dict=config_dict)
 
-        self.assertEqual(ecl_config_dict, ecl_config_file)
+        assert ecl_config_dict == ecl_config_file

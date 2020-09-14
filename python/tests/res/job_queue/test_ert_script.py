@@ -40,7 +40,7 @@ class ErtScriptTest(ResTest):
     def test_ert_script_return_ert(self):
         script = ReturnErtScript("ert")
         result = script.initializeAndRun([], [])
-        self.assertEqual(result, "ert")
+        assert result == "ert"
 
 
     def test_ert_script_add(self):
@@ -48,14 +48,14 @@ class ErtScriptTest(ResTest):
 
         result = script.initializeAndRun([int, int], ["5", "4"])
 
-        self.assertEqual(result, 9)
+        assert result == 9
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             result = script.initializeAndRun([int, int], ["5", "4.6"])
 
 
     def test_ert_script_failed_implementation(self):
-        with self.assertRaises(UserWarning):
+        with pytest.raises(UserWarning):
             script = FailScript("ert")
 
 
@@ -67,13 +67,13 @@ class ErtScriptTest(ResTest):
 
             script = script_object("ert")
             result = script.initializeAndRun([int, int], ["1", "2"])
-            self.assertEqual(result, -1)
+            assert result == -1
 
 
             # with self.assertRaises(ErtScriptError):
-            self.assertIsNone(ErtScript.loadScriptFromFile("syntax_error_script.py"))
-            self.assertIsNone(ErtScript.loadScriptFromFile("import_error_script.py"))
-            self.assertIsNone(ErtScript.loadScriptFromFile("empty_script.py"))
+            assert ErtScript.loadScriptFromFile("syntax_error_script.py") is None
+            assert ErtScript.loadScriptFromFile("import_error_script.py") is None
+            assert ErtScript.loadScriptFromFile("empty_script.py") is None
 
 
     def test_none_ert_script(self):

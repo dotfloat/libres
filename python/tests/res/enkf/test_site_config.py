@@ -27,14 +27,14 @@ class SiteConfigTest(ResTest):
 
     @tmpdir()
     def test_invalid_user_config(self):
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             SiteConfig("this/is/not/a/file")
 
     @tmpdir(local="simple_config")
     def test_init(self):
         config_file = "simple_config/minimum_config"
         site_config = SiteConfig(user_config_file=config_file)
-        self.assertIsNotNone(site_config)
+        assert site_config is not None
 
     @tmpdir(local="snake_oil")
     def test_constructors(self):
@@ -84,7 +84,7 @@ class SiteConfigTest(ResTest):
 
         site_config_user_file = SiteConfig(user_config_file=config_file)
         site_config_dict = SiteConfig(config_dict=snake_config_dict)
-        self.assertEqual(site_config_dict, site_config_user_file)
+        assert site_config_dict == site_config_user_file
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             site_config = SiteConfig(user_config_file=config_file, config_dict=snake_config_dict)

@@ -15,45 +15,45 @@ class RunTest(ResTest):
 
 
     def test_init(self):
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             TestRun("Does/notExist")
 
         tr = TestRun(self.testConfig)
-        self.assertEqual( tr.config_file , os.path.split( self.testConfig)[1])
-        self.assertEqual(tr.ert_version , "stable")
+        assert tr.config_file == os.path.split( self.testConfig)[1]
+        assert tr.ert_version == "stable"
 
 
     def test_args(self):
         tr = TestRun(self.testConfig , args=["-v" , "latest"])
-        self.assertEqual(tr.ert_version , "latest")
+        assert tr.ert_version == "latest"
 
 
     def test_cmd(self):
         tr = TestRun(self.testConfig)
-        self.assertEqual( tr.ert_cmd , TestRun.default_ert_cmd )
+        assert tr.ert_cmd == TestRun.default_ert_cmd
 
         tr.ert_cmd = "/tmp/test"
-        self.assertEqual( "/tmp/test" , tr.ert_cmd )
+        assert "/tmp/test" == tr.ert_cmd
 
 
     def test_args2(self):
         tr = TestRun(self.testConfig , args = ["arg1","arg2","-v","latest"])
-        self.assertEqual( tr.get_args() , ["arg1","arg2"])
-        self.assertEqual(tr.ert_version , "latest")
+        assert tr.get_args() == ["arg1","arg2"]
+        assert tr.ert_version == "latest"
 
 
     def test_workflows(self):
         tr = TestRun(self.testConfig)
-        self.assertEqual( tr.get_workflows() , [])
+        assert tr.get_workflows() == []
 
         tr.add_workflow( "wf1" )
         tr.add_workflow( "wf2" )
-        self.assertEqual( tr.get_workflows() , ["wf1" , "wf2"])
+        assert tr.get_workflows() == ["wf1" , "wf2"]
 
 
     def test_run_no_workflow(self):
         tr = TestRun(self.testConfig)
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             tr.run()
 
 
@@ -61,15 +61,15 @@ class RunTest(ResTest):
 
     def test_runpath(self):
         tr = TestRun(self.testConfig , "Name")
-        self.assertEqual( TestRun.default_path_prefix , tr.path_prefix )
+        assert TestRun.default_path_prefix == tr.path_prefix
 
 
     def test_check(self):
         tr = TestRun(self.testConfig , "Name")
         tr.add_check( path_exists , "some/file" )
 
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             tr.add_check( 25 , "arg")
 
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             tr.add_check( func_does_not_exist , "arg")

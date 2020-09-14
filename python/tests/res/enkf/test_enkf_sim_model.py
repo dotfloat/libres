@@ -78,9 +78,9 @@ class EnKFTestSimModel(ResTest):
 
             model_config = ert.getModelConfig()
             forward_model = model_config.getForwardModel()
-            self.assertEqual(forward_model.get_size(), 4)
-            self.assertEqual(forward_model.iget_job(3).get_arglist(), ["WORD_A"])
-            self.assertEqual(forward_model.iget_job(0).get_arglist(), ["<ARGUMENT>"])
+            assert forward_model.get_size() == 4
+            assert forward_model.iget_job(3).get_arglist() == ["WORD_A"]
+            assert forward_model.iget_job(0).get_arglist() == ["<ARGUMENT>"]
             self.assertEqual(
                 forward_model.iget_job(1).get_arglist(), ["Hello", "True", "3.14", "4"]
             )
@@ -100,17 +100,17 @@ class EnKFTestSimModel(ResTest):
             )
             ert.getEnkfSimulationRunner().createRunPath(run_context)
             queue_config = ert.get_queue_config()
-            self.assertEqual(queue_config.num_cpu, 5)
+            assert queue_config.num_cpu == 5
             os.chdir("storage/sim_kw/runpath/realisation-0/iter-0")
             assert os.path.isfile("jobs.json")
             with open("jobs.json", "r") as f:
                 data = json.load(f)
                 jobList = data["jobList"]
                 old_job_A = jobList[3]
-                self.assertEqual(old_job_A["argList"], ["WORD_A"])
+                assert old_job_A["argList"] == ["WORD_A"]
                 old_job_B = jobList[0]
-                self.assertEqual(old_job_B["argList"], ["yy"])
+                assert old_job_B["argList"] == ["yy"]
                 new_job_A = jobList[1]
-                self.assertEqual(new_job_A["argList"], ["Hello", "True", "3.14", "4"])
+                assert new_job_A["argList"] == ["Hello", "True", "3.14", "4"]
                 new_job_B = jobList[2]
-                self.assertEqual(new_job_B["argList"], ["word", "SIM_KW"])
+                assert new_job_B["argList"] == ["word", "SIM_KW"]

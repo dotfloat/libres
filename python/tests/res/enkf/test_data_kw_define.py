@@ -28,4 +28,4 @@ class DataKWTest(ResTest):
             ert = context.getErt()
             data_kw = ert.getDataKW( )
             my_path = data_kw["MY_PATH"]
-            self.assertEqual( my_path , os.getcwd())
+            assert my_path == os.getcwd()

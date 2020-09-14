@@ -24,13 +24,13 @@ class SummaryObservationCollectorTest(ResTest):
 
             ert = context.getErt()
 
-            self.assertTrue(SummaryObservationCollector.summaryKeyHasObservations(ert, "FOPR"))
-            self.assertFalse(SummaryObservationCollector.summaryKeyHasObservations(ert, "FOPT"))
+            assert SummaryObservationCollector.summaryKeyHasObservations(ert, "FOPR")
+            assert not SummaryObservationCollector.summaryKeyHasObservations(ert, "FOPT")
 
             keys = SummaryObservationCollector.getAllObservationKeys(ert)
-            self.assertTrue("FOPR" in keys)
-            self.assertTrue("WOPR:OP1" in keys)
-            self.assertFalse("WOPR:OP2" in keys)
+            assert "FOPR" in keys
+            assert "WOPR:OP1" in keys
+            assert not "WOPR:OP2" in keys
 
             data = SummaryObservationCollector.loadObservationData(ert, "default_0")
 
@@ -41,7 +41,7 @@ class SummaryObservationCollectorTest(ResTest):
             self.assertFloatEqual(data["STD_WOPR:OP1"]["2010-03-31"], 0.05)
 
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 fgir = data["FGIR"]
 
 
@@ -50,5 +50,5 @@ class SummaryObservationCollectorTest(ResTest):
             self.assertFloatEqual(data["WOPR:OP1"]["2010-03-31"], 0.1)
             self.assertFloatEqual(data["STD_WOPR:OP1"]["2010-03-31"], 0.05)
 
-            with self.assertRaises(KeyError):
+            with pytest.raises(KeyError):
                 data["FOPR"]

@@ -86,4 +86,3 @@ class UpdateTest(ResTest):
           obs.getObservationAndMeasureData( fs , local_obsdata , mask.createActiveList() , meas_data , obs_data )
           update( self.rng , mask , analysis , ert , meas_data , obs_data , state_size)
 
-
